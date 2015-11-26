@@ -3,5 +3,7 @@ src/subtask1/Slot1/data
 *.swp
 util/auto_encoder/*
 *.embed
+*.encode
+size/*
 trash/*
 temp/*
