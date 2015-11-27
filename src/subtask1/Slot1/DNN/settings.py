@@ -13,24 +13,28 @@ BATCH_SIZE = 250
 MOMENTUM = 0.9
 # NUM_HIDDEN_UNITS = [2048, 2048,256,128] #laptop(81)
 # NUM_HIDDEN_UNITS = [2048, 2048,256,128] #laptop(81)
-NUM_HIDDEN_UNITS = [1000,500,256,64] #restaurant(category : 12)
+NUM_HIDDEN_UNITS = [2000,1000,256,64] #restaurant(category : 12)
 LEARNING_RATE = 0.0001
+INPUT_DIM = 4000
+OUTPUT_DIM = 12
+NUM_EPOCHS=100
 
-def build_model(input_dim, output_dim, batch_size=BATCH_SIZE, num_hidden_units=NUM_HIDDEN_UNITS):
-    l_in = lasagne.layers.InputLayer(shape=(BATCH_SIZE, input_dim))
-    l_dp0 = lasagne.layers.DropoutLayer(l_in, p=0.8)
+def build_model(inputVar,input_dim=INPUT_DIM, output_dim=OUTPUT_DIM,
+        batch_size=BATCH_SIZE, num_hidden_units=NUM_HIDDEN_UNITS):
+    l_in = lasagne.layers.InputLayer(shape=(BATCH_SIZE,input_dim),input_var=inputVar)
+    l_dp0 = lasagne.layers.DropoutLayer(l_in, p=0.2)
     l_hidden1 = lasagne.layers.DenseLayer(
             l_dp0,
             num_units=num_hidden_units[0],
             nonlinearity=lasagne.nonlinearities.rectify,
             )
-    l_dp1 = lasagne.layers.DropoutLayer(l_hidden1, p=0.7)
+    l_dp1 = lasagne.layers.DropoutLayer(l_hidden1, p=0.5)
     l_hidden2 = lasagne.layers.DenseLayer(
             l_dp1,
             num_units=num_hidden_units[1],
             nonlinearity=lasagne.nonlinearities.rectify
             )
-    l_dp2 = lasagne.layers.DropoutLayer(l_hidden2, p=0.8)
+    l_dp2 = lasagne.layers.DropoutLayer(l_hidden2, p=0.5)
     l_hidden3 = lasagne.layers.DenseLayer(
             l_dp2,
             num_units=num_hidden_units[2],
