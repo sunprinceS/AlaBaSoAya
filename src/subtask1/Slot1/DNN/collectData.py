@@ -25,14 +25,17 @@ def loadMap(categoryFile):
 if __name__ == '__main__':
     loadMap("../data/"+sys.argv[1]+".category")
     output = open(output_fn,'w')
+    output_lab = open("DATA/{}.lab".format(sys.argv[1]),'w')
     labs = open(lab_fn,'r').read().splitlines()
     embeds = open(embed_fn,'r').read().splitlines()
     assert len(labs) == len(embeds)
 
     for lab_tmp,embed in zip(labs,embeds):
         lab=lab_tmp.split(',')[1]
-        output.write("{} {}\n".format(category_map[lab],embed))
+        output.write("{}\n".format(embed))
+        output_lab.write("{}\n".format(category_map[lab]))
 
     output.close()
+    output_lab.close()
     # labs.close()
     # embeds.close()
