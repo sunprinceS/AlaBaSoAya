@@ -1,17 +1,5 @@
 #!/usr/bin/env python
 
-"""
-Usage example employing Lasagne for digit recognition using the MNIST dataset.
-
-This example is deliberately structured as a long flat file, focusing on how
-to use Lasagne, instead of focusing on writing maximally modular and reusable
-code. It is used as the foundation for the introductory Lasagne tutorial:
-http://lasagne.readthedocs.org/en/latest/user/tutorial.html
-
-More in-depth examples and reproductions of paper results are maintained in
-a separate repository: https://github.com/Lasagne/Recipes
-"""
-
 from __future__ import print_function
 
 import sys
@@ -26,9 +14,6 @@ from settings import *
 import sys
 import lasagne
 
-# ################## Download and prepare the MNIST dataset ##################
-# This is just some way of getting the MNIST dataset from an online location
-# and loading it into numpy arrays. It doesn't involve Lasagne at all.
 
 def load_dataset():
 
@@ -46,8 +31,6 @@ def load_dataset():
     X_train, X_val = X_train[:int(len(X_train)*4/5)], X_train[int(-len(X_train)*4/5):]
     y_train, y_val = y_train[:int(len(y_train)*4/5)], y_train[int(-len(y_train)*4/5):]
 
-    # We just return all the arrays in order, as expected in main().
-    # (It doesn't matter how we do this as long as we can read them again.)
     train_data.close()
     train_lab.close()
     return X_train, y_train, X_val, y_val
@@ -57,7 +40,6 @@ def iterate_minibatches(inputs, targets, batchsize=BATCH_SIZE, shuffle=False):
     assert len(inputs) == len(targets)
     inputs = np.array(inputs)
     targets = np.array(targets)
-    # print(targets)
     if shuffle:
         indices = np.arange(len(inputs))
         np.random.shuffle(indices)
@@ -66,7 +48,6 @@ def iterate_minibatches(inputs, targets, batchsize=BATCH_SIZE, shuffle=False):
             excerpt = indices[start_idx:start_idx + batchsize]
         else:
             excerpt = slice(start_idx, start_idx + batchsize)
-        # print(inputs[excerpt],targets[excerpt])
         yield (inputs[excerpt], targets[excerpt])
 
 
@@ -80,12 +61,20 @@ def main():
     print("Loading data...")
     X_train, y_train, X_val, y_val = load_dataset()
     
+
     # Prepare Theano variables for inputs and targets
     input_var = T.matrix('inputs')
     target_var = T.ivector('labels')
     # Create neural network model (depending on first command line parameter)
     print("Building model and compiling functions...")
     network = build_model(inputVar=input_var)
+    
+    #load previous model
+    if len(sys.argv) == 3:
+        print("loading model".format(sys.argv[2]))
+        with np.load('model/{}/{}.npz'.format(sys.argv[1],sys.argv[2])) as f:
+            param_values = [f['arr_%d' % i] for i in range(len(f.files))]
+        lasagne.layers.set_all_param_values(network, param_values)
 
     # Create a loss expression for training, i.e., a scalar objective we want
     # to minimize (for our multi-class problem, it is the cross-entropy loss):
@@ -123,7 +112,7 @@ def main():
         train_err = 0
         train_batches = 0
         start_time = time.time()
-        for batch in iterate_minibatches(X_train, y_train, shuffle=False):
+        for batch in iterate_minibatches(X_train, y_train, shuffle=True):
             inputs, targets = batch
             train_err += train_fn(inputs, targets)
             train_batches += 1
@@ -132,7 +121,7 @@ def main():
         val_err = 0
         val_acc = 0
         val_batches = 0
-        for batch in iterate_minibatches(X_val, y_val,100 , shuffle=False):
+        for batch in iterate_minibatches(X_val, y_val,200 , shuffle=False):
             inputs, targets = batch
             err, acc = val_fn(inputs, targets)
             val_err += err
@@ -146,15 +135,8 @@ def main():
         print("  validation loss:\t\t{:.6f}".format(val_err / val_batches))
         print("  validation accuracy:\t\t{:.2f} %".format(
             val_acc / val_batches * 100))
-
-
-    # Optionally, you could now dump the network weights to a file like this:
-    # np.savez('model.npz', *lasagne.layers.get_all_param_values(network))
-    #
-    # And load them again later on like this:
-    # with np.load('model.npz') as f:
-    #     param_values = [f['arr_%d' % i] for i in range(len(f.files))]
-    # lasagne.layers.set_all_param_values(network, param_values)
+        if(epoch%10==0):
+            np.savez('model/{}/tmp/{}x{:.2f}.npz'.format(sys.argv[1],epoch,val_acc / val_batches * 100), *lasagne.layers.get_all_param_values(network))
 
 
 if __name__ == '__main__':

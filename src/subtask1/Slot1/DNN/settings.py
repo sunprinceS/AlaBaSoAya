@@ -11,12 +11,12 @@ import numpy as np
 import collections
 BATCH_SIZE = 250
 MOMENTUM = 0.9
+NUM_HIDDEN_UNITS = [2048, 2048,256,128] #laptop(81)
 # NUM_HIDDEN_UNITS = [2048, 2048,256,128] #laptop(81)
-# NUM_HIDDEN_UNITS = [2048, 2048,256,128] #laptop(81)
-NUM_HIDDEN_UNITS = [2000,1000,256,64] #restaurant(category : 12)
+# NUM_HIDDEN_UNITS = [2000,1000,256,64] #restaurant(category : 12)
 LEARNING_RATE = 0.0001
 INPUT_DIM = 4000
-OUTPUT_DIM = 12
+OUTPUT_DIM = 81
 NUM_EPOCHS=100
 
 def build_model(inputVar,input_dim=INPUT_DIM, output_dim=OUTPUT_DIM,
@@ -28,25 +28,25 @@ def build_model(inputVar,input_dim=INPUT_DIM, output_dim=OUTPUT_DIM,
             num_units=num_hidden_units[0],
             nonlinearity=lasagne.nonlinearities.rectify,
             )
-    l_dp1 = lasagne.layers.DropoutLayer(l_hidden1, p=0.5)
+    l_dp1 = lasagne.layers.DropoutLayer(l_hidden1, p=0.2)
     l_hidden2 = lasagne.layers.DenseLayer(
             l_dp1,
             num_units=num_hidden_units[1],
             nonlinearity=lasagne.nonlinearities.rectify
             )
-    l_dp2 = lasagne.layers.DropoutLayer(l_hidden2, p=0.5)
+    l_dp2 = lasagne.layers.DropoutLayer(l_hidden2, p=0.2)
     l_hidden3 = lasagne.layers.DenseLayer(
             l_dp2,
             num_units=num_hidden_units[2],
             nonlinearity=lasagne.nonlinearities.rectify
             )
-    l_dp3 = lasagne.layers.DropoutLayer(l_hidden3, p=0.9)
+    l_dp3 = lasagne.layers.DropoutLayer(l_hidden3, p=0.2)
     l_hidden4 = lasagne.layers.DenseLayer(
             l_dp3,
             num_units=num_hidden_units[3],
             nonlinearity=lasagne.nonlinearities.rectify
             )
-    l_dp4 = lasagne.layers.DropoutLayer(l_hidden4, p=0.9)
+    l_dp4 = lasagne.layers.DropoutLayer(l_hidden4, p=0.2)
     l_out = lasagne.layers.DenseLayer(
             l_dp4,
             num_units=output_dim,
