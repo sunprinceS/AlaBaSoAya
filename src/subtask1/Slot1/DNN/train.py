@@ -142,7 +142,7 @@ def main():
 if __name__ == '__main__':
     if ('--help' in sys.argv) or ('-h' in sys.argv):
         print("Trains a neural network on ABSA subtask1 using Lasagne.")
-        print("Usage: %s " % sys.argv[0])
+        print("Usage: {} <category> [model]" .format(sys.argv[0]))
         print()
     else:
         main()

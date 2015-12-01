@@ -3,7 +3,12 @@ src/subtask1/Slot1/data
 *.swp
 util/auto_encoder/*
 *.embed
+*.embed4000
 *.encode
 size/*
 trash/*
 temp/*
+*.npz
+*.in
+*.lab
+__pycache__/
