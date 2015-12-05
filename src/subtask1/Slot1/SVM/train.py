@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 from tgrocery import Grocery
 import sys
+pred = open('prediction_{}'.format(sys.argv[1]),'w')
+golden = open('golden_{}'.format(sys.argv[1]),'w')
 train_fn = Grocery(sys.argv[1])
 
 labels=[]
@@ -21,7 +23,16 @@ train_fn.save()
 
 valid_fn = Grocery(sys.argv[1])
 valid_fn.load()
-# Predict
 
+for sent in data[int(len(data)*4/5):]:
+    pred.write('{}\n'.format(valid_fn.predict(sent[1])))
+    golden.write('{}\n'.format(sent[0]))
+        
+pred.close()
+golden.close()
+
+
+
+# Predict
 acc = valid_fn.test(data[int(len(data)*4/5):])
 print("Out-sample accuracy : {}\n".format(acc))

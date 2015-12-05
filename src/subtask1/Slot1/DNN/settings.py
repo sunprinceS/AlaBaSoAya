@@ -9,15 +9,15 @@ Description: setting of DNN
 import lasagne
 import numpy as np
 import collections
-BATCH_SIZE = 250
+BATCH_SIZE = 100
 MOMENTUM = 0.9
-NUM_HIDDEN_UNITS = [2048, 2048,256,128] #laptop(81)
 # NUM_HIDDEN_UNITS = [2048, 2048,256,128] #laptop(81)
-# NUM_HIDDEN_UNITS = [2000,1000,256,64] #restaurant(category : 12)
+# NUM_HIDDEN_UNITS = [2048, 2048,256,128] #laptop(81)
+NUM_HIDDEN_UNITS = [128,128,32,32] #restaurant(category : 12)
 LEARNING_RATE = 0.0001
 INPUT_DIM = 4000
-OUTPUT_DIM = 81
-NUM_EPOCHS=100
+OUTPUT_DIM = 12
+NUM_EPOCHS=1000
 
 def build_model(inputVar,input_dim=INPUT_DIM, output_dim=OUTPUT_DIM,
         batch_size=BATCH_SIZE, num_hidden_units=NUM_HIDDEN_UNITS):

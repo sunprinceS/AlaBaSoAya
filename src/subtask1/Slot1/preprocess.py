@@ -14,7 +14,7 @@ reviews_root = DOMTree.documentElement
 # Get all the reviews
 reviews = reviews_root.getElementsByTagName("Review")
 train_data_name="data/"+sys.argv[1]+".dat"
-label_name="data/"+sys.argv[1]+".lab"
+label_name="data/"+sys.argv[1]+".sent"
 train_data = open(train_data_name,'w')
 label = open(label_name,'w')
 
@@ -34,8 +34,8 @@ for review in reviews:
             opinions = opinions_root.getElementsByTagName("Opinion")
             for i,opinion in enumerate(opinions):
                 train_data.write('{}\n'.format(text))
-                category = opinion.getAttribute("category")
+                polarity= opinion.getAttribute("polarity")
                 # label.write('{},{}\n'.format(sentence_id,category))
-                label.write('{},{}\n'.format(sentence_id,category))
+                label.write('{},{}\n'.format(sentence_id,polarity))
         except IndexError:
             continue
