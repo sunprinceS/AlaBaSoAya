@@ -11,4 +11,7 @@ temp/*
 *.npz
 *.in
 *.lab
+treelstm/lib
+treelstm/trained_models
+treelstm/data
 __pycache__/
