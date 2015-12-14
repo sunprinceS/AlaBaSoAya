@@ -124,6 +124,19 @@ function TreeLSTMSentiment:prob(tree, sent)
   return output
 end
 
+function TreeLSTMSentiment:feature(tree, sent)
+  self.treelstm:evaluate()
+  local inputs = self.emb:forward(sent)
+  self.treelstm:forward(tree, inputs)
+  --local output = tree.output
+  local state = tree.state
+  local ctable, htable = unpack(state)
+  --print(ctable)
+  --print(htable)
+  self.treelstm:clean(tree)
+  return htable
+end
+
 function TreeLSTMSentiment:predict_dataset(dataset)
   local predictions = torch.Tensor(dataset.size)
   for i = 1, dataset.size do
@@ -140,6 +153,16 @@ function TreeLSTMSentiment:get_probs(dataset)
     probs[i] = self:prob(dataset.trees[i], dataset.sents[i])
   end
   return probs
+end
+
+function TreeLSTMSentiment:get_features(dataset)
+  local features = torch.Tensor(dataset.size, self.mem_dim)
+  --local features = torch.Tensor(dataset.size, 5)
+  for i = 1, dataset.size do
+    xlua.progress(i, dataset.size)
+    features[i] = self:feature(dataset.trees[i], dataset.sents[i])
+  end
+  return features
 end
 
 function argmax(v)
