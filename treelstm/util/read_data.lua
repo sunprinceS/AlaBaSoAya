@@ -167,6 +167,9 @@ function treelstm.read_sentiment_dataset(dir, vocab, fine_grained, dependency)
   end
 
   local sents = treelstm.read_sentences(dir .. 'sents.txt', vocab)
+  dataset.trees = trees
+  dataset.sents = sents
+  --[[
   if not fine_grained then
     dataset.trees = {}
     dataset.sents = {}
@@ -180,12 +183,14 @@ function treelstm.read_sentiment_dataset(dir, vocab, fine_grained, dependency)
     dataset.trees = trees
     dataset.sents = sents
   end
+  --]]
 
   dataset.size = #dataset.trees
   dataset.labels = torch.Tensor(dataset.size)
   for i = 1, dataset.size do
     remap_labels(dataset.trees[i], fine_grained)
     dataset.labels[i] = dataset.trees[i].gold_label
+	print(dataset.labels[i])
   end
   return dataset
 end

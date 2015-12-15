@@ -14,4 +14,5 @@ temp/*
 treelstm/lib
 treelstm/trained_models
 treelstm/data
+treelstm/predictions
 __pycache__/

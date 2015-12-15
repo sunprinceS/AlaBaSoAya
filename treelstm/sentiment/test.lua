@@ -61,12 +61,15 @@ collectgarbage()
 
 -- load datasets
 print('loading datasets')
+local train_dir = data_dir .. 'train/'
 local dev_dir = data_dir .. 'dev/'
 --local test_dir = data_dir .. 'test/'
 local dependency = true
+local train_dataset = treelstm.read_sentiment_dataset(train_dir, vocab, fine_grained, dependency)
 local dev_dataset = treelstm.read_sentiment_dataset(dev_dir, vocab, fine_grained, dependency)
 --local test_dataset = treelstm.read_sentiment_dataset(test_dir, vocab, fine_grained, dependency)
 
+printf('num train = %d\n', train_dataset.size)
 printf('num dev   = %d\n', dev_dataset.size)
 --printf('num test  = %d\n', test_dataset.size)
 
@@ -77,51 +80,42 @@ local model = model_class.load(args.model)
 header('model configuration')
 model:print_config()
 
+local train_features = model:get_features(train_dataset)
 local dev_features = model:get_features(dev_dataset)
-print(dev_features)
---local dev_predictions = model:predict_dataset(dev_dataset)
---local dev_score = accuracy(dev_predictions, dev_dataset.labels)
---printf('-- dev score: %.4f\n', dev_score)
-
-
--- evaluate
---[[
-header('Evaluating on test set')
-printf('-- using model with dev score = %.4f\n', best_dev_score)
-local test_predictions = best_dev_model:predict_dataset(test_dataset)
-printf('-- test score: %.4f\n', accuracy(test_predictions, test_dataset.labels))
---]]
+--print(dev_features)
 
 -- create predictions and models directories if necessary
---[[
+--[
 if lfs.attributes(treelstm.predictions_dir) == nil then
   lfs.mkdir(treelstm.predictions_dir)
 end
 --]]
 
--- get paths
---[[
-local file_idx = 1
-local subtask = fine_grained and '5class' or '2class'
-local predictions_save_path
-while true do
-  predictions_save_path = string.format(
-    treelstm.predictions_dir .. '/sent-%s.%s.%dl.%dd.%d.pred', args.model, subtask, args.layers, args.dim, file_idx)
-  --if lfs.attributes(predictions_save_path) == nil and lfs.attributes(model_save_path) == nil then
-  if lfs.attributes(predictions_save_path) == nil then
-    break
-  end
-  file_idx = file_idx + 1
-end
---]]
+local train_features_save_path = string.format(treelstm.predictions_dir .. '/%s_train.feat', args.dataset)
+local dev_features_save_path = string.format(treelstm.predictions_dir .. '/%s_dev.feat', args.dataset)
 
--- write predictions to disk
---[[
-local predictions_file = torch.DiskFile(predictions_save_path, 'w')
-print('writing predictions to ' .. predictions_save_path)
-for i = 1, test_predictions:size(1) do
-  predictions_file:writeInt(test_predictions[i])
+-- save features to disk
+print('writing features...')
+local train_features_file = torch.DiskFile(train_features_save_path, 'w')
+train_features_file:noAutoSpacing()
+for i = 1, train_features:size(1) do
+	train_features_file:writeDouble(train_features[i][1])
+	for j = 2, train_features:size(2) do
+		train_features_file:writeString(' ')
+		train_features_file:writeDouble(train_features[i][j])
+	end
+	train_features_file:writeString('\n')
 end
-predictions_file:close()
---]]
+train_features_file:close()
 
+local dev_features_file = torch.DiskFile(dev_features_save_path, 'w')
+dev_features_file:noAutoSpacing()
+for i = 1, dev_features:size(1) do
+	dev_features_file:writeDouble(dev_features[i][1])
+	for j = 2, dev_features:size(2) do
+		dev_features_file:writeString(' ')
+		dev_features_file:writeDouble(dev_features[i][j])
+	end
+	dev_features_file:writeString('\n')
+end
+dev_features_file:close()

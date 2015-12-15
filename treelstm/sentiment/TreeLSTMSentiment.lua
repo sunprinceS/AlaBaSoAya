@@ -106,11 +106,14 @@ function TreeLSTMSentiment:predict(tree, sent)
   local inputs = self.emb:forward(sent)
   self.treelstm:forward(tree, inputs)
   local output = tree.output
+  prediction = argmax(output)
+  --[[
   if self.fine_grained then
     prediction = argmax(output)
   else
     prediction = (output[1] > output[3]) and 1 or 3
   end
+  --]]
   self.treelstm:clean(tree)
   return prediction
 end
