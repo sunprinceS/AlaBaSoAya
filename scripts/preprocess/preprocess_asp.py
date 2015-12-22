@@ -8,7 +8,7 @@ from xml.dom.minidom import parse
 # Open XML document using minidom parser
 
 if(sys.argv[2] == 'train'):
-    data="tmp_data/tr.xml"
+    data="tmp_data/tr.xml.{}".format(sys.argv[3])
 
     DOMTree = xml.dom.minidom.parse(data)
     reviews_root = DOMTree.documentElement
@@ -16,8 +16,8 @@ if(sys.argv[2] == 'train'):
     # Get all the reviews
     reviews = reviews_root.getElementsByTagName("Review")
 
-    train_data_name="misc_data/{}_{}.asp.dat".format(sys.argv[1],sys.argv[2])
-    label_name="misc_data/{}_{}.asp.label".format(sys.argv[1],sys.argv[2])
+    train_data_name="misc_data/{}_{}.asp.dat.{}".format(sys.argv[1],sys.argv[2],sys.argv[3])
+    label_name="misc_data/{}_{}.asp.label.{}".format(sys.argv[1],sys.argv[2],sys.argv[3])
 
     train_data = open(train_data_name,'w')
     label = open(label_name,'w')
@@ -42,16 +42,15 @@ if(sys.argv[2] == 'train'):
 
 elif sys.argv[2]=='te':
 
-    data="tmp_data/teCln.xml"
-    idxMapping=open("misc_data/{}_te.id".format(sys.argv[1]),'w')
+    data="tmp_data/teCln.xml.{}".format(sys.argv[3])
+    idxMapping=open("misc_data/{}_te.id.{}".format(sys.argv[1],sys.argv[3]),'w')
     DOMTree = xml.dom.minidom.parse(data)
     reviews_root = DOMTree.documentElement
 
     # Get all the reviews
     reviews = reviews_root.getElementsByTagName("Review")
-    train_data_name="misc_data/{}_{}.asp.dat".format(sys.argv[1],sys.argv[2])
-    test_data_name="misc_data/{}_{}.asp.dat".format(sys.argv[1],sys.argv[2])
-    test_data = open(train_data_name,'w')
+    test_data_name="misc_data/{}_{}.asp.dat.{}".format(sys.argv[1],sys.argv[2],sys.argv[3])
+    test_data = open(test_data_name,'w')
 
     for review in reviews:
 

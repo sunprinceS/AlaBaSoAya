@@ -11,20 +11,20 @@ import sys
 #<sentence_id:category1 category2 ...>
 
 ans_dic={}
-idList_file=open('misc_data/{}_te.id'.format(sys.argv[1]))
+idList_file=open('misc_data/{}_te.id.{}'.format(sys.argv[1],sys.argv[2]))
 idList = idList_file.read().splitlines()
 idList_file.close()
 
 idx=0
 def load_ans():
-    with open('output/{}_asp.out'.format(sys.argv[1]),'r') as ans_file:
+    with open('output/{}_asp.out.{}'.format(sys.argv[1],sys.argv[2]),'r') as ans_file:
         tmp_ans = ans_file.read().splitlines()
         for idx,a in enumerate(tmp_ans):
             one_ans = a.split(' ')
             ans_dic[idList[idx]] = one_ans
 
-submit_data="output/{}_asp.xml".format(sys.argv[1])
-data_skeleton="tmp_data/teCln.xml"
+submit_data="output/{}_asp.xml.{}".format(sys.argv[1],sys.argv[2])
+data_skeleton="tmp_data/teCln.xml.{}".format(sys.argv[2])
 DOMTree = xml.dom.minidom.parse(data_skeleton)
 submit_DOMTree = DOMTree
 reviews_root = submit_DOMTree.documentElement
