@@ -1,6 +1,15 @@
 data/*
+tmp_data/*
 src/subtask1/Slot1/data
 *.swp
+A_2015.jar
+glove/*
+output/*
+origin_data/*
+lapt/*
+rest/*
+misc_data/*
+auto_encoder/*
 util/auto_encoder/*
 *.embed
 *.embed4000

@@ -5,6 +5,7 @@ from __future__ import print_function
 from svmutil import *
 from sklearn.feature_extraction.text import CountVectorizer , TfidfTransformer
 from sklearn.decomposition import PCA
+from sklearn.externals import joblib
 import sys
 
 lab_map={}
@@ -16,39 +17,33 @@ with open('misc_data/categoryMap/{}.category'.format(sys.argv[1])) as category_f
         lab_map[idx]=category
 
 # build bag of words analyzer
-vectorizer = CountVectorizer(min_df=1,stop_words='english')
-tfidf_transformer = TfidfTransformer()
-pca = PCA(n_components=1000)
-with open('misc_data/{}_te.asp.dat'.format(sys.argv[1])) as test_data:
-    test_corpus = test_data.read().splitlines()
-    bow_matrix = vectorizer.fit_transform(test_corpus)
+vectorizer = joblib.load('src/libsvm/python/transformModel/vec.{}.{}'.format(sys.argv[1],sys.argv[2])
+)
+tfidf_transformer = joblib.load('src/libsvm/python/transformModel/tfidf.{}.{}'.format(sys.argv[1],sys.argv[2]))
 
-    bow_matrix = tfidf_transformer.fit_transform(bow_matrix)
+# pca = joblib.load('src/libsvm/python/transformModel/pca.{}.{}'.format(sys.argv[1],sys.argv[2]))
+
+
+#Predicting stage
+with open('misc_data/{}_te.asp.dat.{}'.format(sys.argv[1],sys.argv[2])) as test_data:
+    test_corpus = test_data.read().splitlines()
+    bow_matrix = vectorizer.transform(test_corpus)
+
+    bow_matrix = tfidf_transformer.transform(bow_matrix)
     bow_corpus_numeric = bow_matrix.toarray()
-    bow_corpus_numeric = pca.fit_transform(bow_corpus_numeric)
+    # bow_corpus_numeric = pca_transformer.transform(bow_corpus_numeric)
 
     con_labels=[0]*len(test_corpus)
 
     bow_corpus_numeric = bow_corpus_numeric.tolist()
-    svm_classify_model= svm_load_model('src/libsvm/SVMmodel/{}.model'.format(sys.argv[1]))
+    svm_classify_model= svm_load_model('src/libsvm/python/SVMmodel/{}.model.{}'.format(sys.argv[1],sys.argv[2]))
     lab_set = svm_classify_model.get_labels()
     p_labels,p_acc,p_val=svm_predict(con_labels,bow_corpus_numeric,svm_classify_model,'-b 1')
-with open('{}_asp.prob'.format(sys.argv[1]),'w') as prob:
-    prob.write('labels {}\n'.format(' '.join(str(i) for i in lab_set)))
-    for label , val in zip(p_labels,p_val):
-        prob.write('{} {}\n'.format(label,' '.join(str(i) for i in val)))
 
-# with open('output/{}_asp.out'.format(sys.argv[1]),'w') as ans:
-    # # Among this label , a label is only occur at once (MULTIMEDIA_DEVICE#MISC) , drop it!
-    # for lab in p_labels:
-        # ans.write('{}\n'.format(lab_map[int(lab)]))
-
-with open('output/{}_asp.out'.format(sys.argv[1]),'w') as ans:
-    # Among this label , a label is only occur at once (MULTIMEDIA_DEVICE#MISC) , drop it!
+with open('output/{}_asp.out.{}'.format(sys.argv[1],sys.argv[2]),'w') as ans:
     for p_dis in p_val:
         ans_list=[]
         for i,p in enumerate(p_dis):
-            if(p >= float(sys.argv[2])): # threshold
-                # print(lab_set[i])
+            if(p >= float(sys.argv[3])): # threshold
                 ans_list.append(lab_map[lab_set[i]])
         ans.write('{}\n'.format(' '.join(ans_list)))
