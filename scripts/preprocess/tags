@@ -1,0 +1,59 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+DOMTree	preprocess_asp.py	/^    DOMTree = xml.dom.minidom.parse(data)$/;"	v
+DOMTree	preprocess_pol.py	/^    DOMTree = xml.dom.minidom.parse(data)$/;"	v
+category	preprocess_asp.py	/^                category = opinion.getAttribute("category")$/;"	v
+category	preprocess_pol.py	/^                category=opinion.getAttribute("category")$/;"	v
+data	preprocess_asp.py	/^    data="tmp_data\/teCln.xml.{}".format(sys.argv[3])$/;"	v
+data	preprocess_asp.py	/^    data="tmp_data\/tr.xml.{}".format(sys.argv[3])$/;"	v
+data	preprocess_pol.py	/^    data="tmp_data\/teGldAspTrg.xml.{}".format(sys.argv[3])$/;"	v
+data	preprocess_pol.py	/^    data="tmp_data\/tr.xml.{}".format(sys.argv[3])$/;"	v
+dom	preprocess_asp.py	/^import xml.dom.minidom$/;"	i
+dom	preprocess_pol.py	/^import xml.dom.minidom$/;"	i
+golden_asp	preprocess_pol.py	/^    golden_asp = open(golden_asp_name,'w')$/;"	v
+golden_asp_name	preprocess_pol.py	/^    golden_asp_name="misc_data\/{}_{}.pol.goldenAsp.{}".format(sys.argv[1],sys.argv[2],sys.argv[3])$/;"	v
+idxMapping	preprocess_asp.py	/^    idxMapping=open("misc_data\/{}_te.id.{}".format(sys.argv[1],sys.argv[3]),'w')$/;"	v
+idxMapping	preprocess_pol.py	/^    idxMapping=open("misc_data\/{}_te.id.{}".format(sys.argv[1],sys.argv[3]),'w')$/;"	v
+label	preprocess_asp.py	/^    label = open(label_name,'w')$/;"	v
+label	preprocess_pol.py	/^    label = open(label_name,'w')$/;"	v
+label_name	preprocess_asp.py	/^    label_name="misc_data\/{}_{}.asp.label.{}".format(sys.argv[1],sys.argv[2],sys.argv[3])$/;"	v
+label_name	preprocess_pol.py	/^    label_name="misc_data\/{}_{}.pol.label.{}".format(sys.argv[1],sys.argv[2],sys.argv[3])$/;"	v
+minidom	preprocess_asp.py	/^import xml.dom.minidom$/;"	i
+minidom	preprocess_pol.py	/^import xml.dom.minidom$/;"	i
+opinions	preprocess_asp.py	/^            opinions = opinions_root.getElementsByTagName("Opinion")$/;"	v
+opinions	preprocess_pol.py	/^            opinions = opinions_root.getElementsByTagName("Opinion")$/;"	v
+opinions_root	preprocess_asp.py	/^            opinions_root = sentence.getElementsByTagName("Opinions")[0]$/;"	v
+opinions_root	preprocess_pol.py	/^            opinions_root = sentence.getElementsByTagName("Opinions")[0]$/;"	v
+parse	preprocess_asp.py	/^from xml.dom.minidom import parse$/;"	i
+parse	preprocess_pol.py	/^from xml.dom.minidom import parse$/;"	i
+polarity	preprocess_pol.py	/^                polarity= opinion.getAttribute("polarity")$/;"	v
+print_function	preprocess_asp.py	/^from __future__ import print_function$/;"	i
+print_function	preprocess_pol.py	/^from __future__ import print_function$/;"	i
+reviews	preprocess_asp.py	/^    reviews = reviews_root.getElementsByTagName("Review")$/;"	v
+reviews	preprocess_pol.py	/^    reviews = reviews_root.getElementsByTagName("Review")$/;"	v
+reviews_root	preprocess_asp.py	/^    reviews_root = DOMTree.documentElement$/;"	v
+reviews_root	preprocess_pol.py	/^    reviews_root = DOMTree.documentElement$/;"	v
+sentence_id	preprocess_asp.py	/^            sentence_id = sentence.getAttribute("id")$/;"	v
+sentence_id	preprocess_pol.py	/^            sentence_id = sentence.getAttribute("id")$/;"	v
+sentences	preprocess_asp.py	/^       sentences = sentences_root.getElementsByTagName('sentence')$/;"	v
+sentences	preprocess_pol.py	/^       sentences = sentences_root.getElementsByTagName('sentence')$/;"	v
+sentences_root	preprocess_asp.py	/^       sentences_root = review.getElementsByTagName('sentences')[0]$/;"	v
+sentences_root	preprocess_pol.py	/^       sentences_root = review.getElementsByTagName('sentences')[0]$/;"	v
+sys	preprocess_asp.py	/^import sys$/;"	i
+sys	preprocess_pol.py	/^import sys$/;"	i
+test_data	preprocess_asp.py	/^    test_data = open(test_data_name,'w')$/;"	v
+test_data	preprocess_pol.py	/^    test_data = open(test_data_name,'w')$/;"	v
+test_data_name	preprocess_asp.py	/^    test_data_name="misc_data\/{}_{}.asp.dat.{}".format(sys.argv[1],sys.argv[2],sys.argv[3])$/;"	v
+test_data_name	preprocess_pol.py	/^    test_data_name="misc_data\/{}_{}.pol.dat.{}".format(sys.argv[1],sys.argv[2],sys.argv[3])$/;"	v
+text	preprocess_asp.py	/^            text = str(sentence.getElementsByTagName("text")[0].childNodes[0].data)$/;"	v
+text	preprocess_pol.py	/^            text = str(sentence.getElementsByTagName("text")[0].childNodes[0].data)$/;"	v
+train_data	preprocess_asp.py	/^    train_data = open(train_data_name,'w')$/;"	v
+train_data	preprocess_pol.py	/^    train_data = open(train_data_name,'w')$/;"	v
+train_data_name	preprocess_asp.py	/^    train_data_name="misc_data\/{}_{}.asp.dat.{}".format(sys.argv[1],sys.argv[2],sys.argv[3])$/;"	v
+train_data_name	preprocess_pol.py	/^    train_data_name="misc_data\/{}_{}.pol.dat.{}".format(sys.argv[1],sys.argv[2],sys.argv[3])$/;"	v
+xml	preprocess_asp.py	/^import xml.dom.minidom$/;"	i
+xml	preprocess_pol.py	/^import xml.dom.minidom$/;"	i
