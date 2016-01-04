@@ -52,6 +52,8 @@ end
 
 -- load vocab
 local vocab = treelstm.Vocab(data_dir .. 'vocab-cased.txt')
+--local vocab = treelstm.Vocab(data_dir .. 'vocab_test.txt')
+--vocab:add_unk_token()
 
 -- load embeddings
 print('loading word embeddings')

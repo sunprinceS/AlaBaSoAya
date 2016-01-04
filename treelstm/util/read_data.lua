@@ -190,7 +190,7 @@ function treelstm.read_sentiment_dataset(dir, vocab, fine_grained, dependency)
   for i = 1, dataset.size do
     remap_labels(dataset.trees[i], fine_grained)
     dataset.labels[i] = dataset.trees[i].gold_label
-	print(dataset.labels[i])
+	--print(dataset.labels[i])
   end
   return dataset
 end
@@ -230,4 +230,34 @@ function remap_labels(tree, fine_grained)
   for i = 1, tree.num_children do
     remap_labels(tree.children[i], fine_grained)
   end
+end
+
+function treelstm.read_absa_dataset(dir, vocab, fine_grained, dependency)
+  local dataset = {}
+  dataset.vocab = vocab
+  dataset.fine_grained = fine_grained
+  local trees
+  if dependency then
+    trees = treelstm.read_trees(dir .. 'dparents.txt')
+  else
+    trees = treelstm.read_trees(dir .. 'parents.txt')
+    for _, tree in ipairs(trees) do
+      set_spans(tree)
+    end
+  end
+
+  local sents = treelstm.read_sentences(dir .. 'sents.txt', vocab)
+  dataset.trees = trees
+  dataset.sents = sents
+
+  dataset.size = #dataset.trees
+  --[[
+  dataset.labels = torch.Tensor(dataset.size)
+  for i = 1, dataset.size do
+    remap_labels(dataset.trees[i], fine_grained)
+    dataset.labels[i] = dataset.trees[i].gold_label
+	--print(dataset.labels[i])
+  end
+  --]]
+  return dataset
 end

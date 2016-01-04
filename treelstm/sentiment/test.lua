@@ -27,13 +27,17 @@ local fine_grained = not args.binary
 -- directory containing dataset files
 local data_dir
 if args.dataset == 'restaurant' then
-  data_dir = 'data/absa_restaurant/'
+  --data_dir = 'data/absa_restaurant/'
+  data_dir = 'parsed_data/restaurant_emb/'
 elseif args.dataset == 'laptop' then
-  data_dir = 'data/absa_laptop/'
+  --data_dir = 'data/absa_laptop/'
+  data_dir = 'parsed_data/laptop_emb/'
 end
 
 -- load vocab
-local vocab = treelstm.Vocab(data_dir .. 'vocab-cased.txt')
+--local vocab = treelstm.Vocab(data_dir .. 'vocab-cased.txt')
+local vocab = treelstm.Vocab(data_dir .. 'vocab_test.txt')
+--vocab:add_unk_token()
 
 -- load embeddings
 print('loading word embeddings')
@@ -41,7 +45,8 @@ local emb_dir = 'data/glove/'
 local emb_prefix = emb_dir .. 'glove.840B'
 local emb_vocab, emb_vecs = treelstm.read_embedding(emb_prefix .. '.vocab', emb_prefix .. '.300d.th')
 local emb_dim = emb_vecs:size(2)
-
+--print(emb_vecs:size())
+--[
 -- use only vectors in vocabulary (not necessary, but gives faster training)
 local num_unk = 0
 local vecs = torch.Tensor(vocab.size, emb_dim)
@@ -62,16 +67,17 @@ collectgarbage()
 -- load datasets
 print('loading datasets')
 local train_dir = data_dir .. 'train/'
-local dev_dir = data_dir .. 'dev/'
---local test_dir = data_dir .. 'test/'
+--local dev_dir = data_dir .. 'dev/'
+local test_dir = data_dir .. 'test/'
 local dependency = true
+local fine_grained = false
 local train_dataset = treelstm.read_sentiment_dataset(train_dir, vocab, fine_grained, dependency)
-local dev_dataset = treelstm.read_sentiment_dataset(dev_dir, vocab, fine_grained, dependency)
---local test_dataset = treelstm.read_sentiment_dataset(test_dir, vocab, fine_grained, dependency)
+--local dev_dataset = treelstm.read_sentiment_dataset(dev_dir, vocab, fine_grained, dependency)
+local test_dataset = treelstm.read_sentiment_dataset(test_dir, vocab, fine_grained, dependency)
 
-printf('num train = %d\n', train_dataset.size)
-printf('num dev   = %d\n', dev_dataset.size)
---printf('num test  = %d\n', test_dataset.size)
+printf('num train   = %d\n', train_dataset.size)
+--printf('num dev   = %d\n', dev_dataset.size)
+printf('num test  = %d\n', test_dataset.size)
 
 -- load model
 local model = model_class.load(args.model)
@@ -80,20 +86,25 @@ local model = model_class.load(args.model)
 header('model configuration')
 model:print_config()
 
+--local dev_predictions = model:predict_dataset(dev_dataset)
+--local dev_score = accuracy(dev_predictions, dev_dataset.labels)
+--printf('-- dev score: %.4f\n', dev_score)
 local train_features = model:get_features(train_dataset)
-local dev_features = model:get_features(dev_dataset)
---print(dev_features)
+--local dev_features = model:get_features(dev_dataset)
+local test_features = model:get_features(test_dataset)
 
 -- create predictions and models directories if necessary
 --[
 if lfs.attributes(treelstm.predictions_dir) == nil then
   lfs.mkdir(treelstm.predictions_dir)
 end
---]]
+--]
 
 local train_features_save_path = string.format(treelstm.predictions_dir .. '/%s_train.feat', args.dataset)
-local dev_features_save_path = string.format(treelstm.predictions_dir .. '/%s_dev.feat', args.dataset)
+--local dev_features_save_path = string.format(treelstm.predictions_dir .. '/%s_dev.feat', args.dataset)
+local test_features_save_path = string.format(treelstm.predictions_dir .. '/%s_test.feat', args.dataset)
 
+--[
 -- save features to disk
 print('writing features...')
 local train_features_file = torch.DiskFile(train_features_save_path, 'w')
@@ -108,14 +119,15 @@ for i = 1, train_features:size(1) do
 end
 train_features_file:close()
 
-local dev_features_file = torch.DiskFile(dev_features_save_path, 'w')
-dev_features_file:noAutoSpacing()
-for i = 1, dev_features:size(1) do
-	dev_features_file:writeDouble(dev_features[i][1])
-	for j = 2, dev_features:size(2) do
-		dev_features_file:writeString(' ')
-		dev_features_file:writeDouble(dev_features[i][j])
+local test_features_file = torch.DiskFile(test_features_save_path, 'w')
+test_features_file:noAutoSpacing()
+for i = 1, test_features:size(1) do
+	test_features_file:writeDouble(test_features[i][1])
+	for j = 2, test_features:size(2) do
+		test_features_file:writeString(' ')
+		test_features_file:writeDouble(test_features[i][j])
 	end
-	dev_features_file:writeString('\n')
+	test_features_file:writeString('\n')
 end
-dev_features_file:close()
+test_features_file:close()
+--]]
