@@ -7,7 +7,7 @@ tags
 # custom #
 data/*
 src/libsvm/*
-!src/libsvm/python/*.py
+!src/libsvm/python/util/
 tmp_data/*
 glove/*
 output/*
