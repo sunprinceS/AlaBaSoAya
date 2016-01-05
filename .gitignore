@@ -1,29 +1,25 @@
-data/*
-tmp_data/*
-src/subtask1/Slot1/data
+# tags #
+tags
+
+# tmp file #
 *.swp
-A_2015.jar
+
+# custom #
+data/*
+src/libsvm/*
+!src/libsvm/python/*.py
+tmp_data/*
 glove/*
 output/*
 origin_data/*
-lapt/*
-rest/*
 misc_data/*
 auto_encoder/*
-util/auto_encoder/*
-*.embed
-*.embed4000
-*.encode
-size/*
-trash/*
 temp/*
+treelstm/{lib,trained_models,data,predictions}
+
 *.npz
 *.in
 *.lab
-treelstm/lib
-treelstm/trained_models
-treelstm/data
-treelstm/predictions
 __pycache__/
 *.json
 *.hdf5
