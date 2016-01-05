@@ -6,7 +6,6 @@ tags
 
 # custom #
 data/*
-#!src/libsvm/python/
 src/libsvm/*
 !src/libsvm/python/
 src/libsvm/python/SVMmodel/*
