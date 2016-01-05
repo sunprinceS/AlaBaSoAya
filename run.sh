@@ -6,8 +6,6 @@ dir=$(pwd)/
 echo "Reading config..." >&2
 . $dir"absa16.conf"
 
-# ttd full path
-#pth=$dir$ttd/
 
 # ---------------------------------------------------
 
@@ -19,13 +17,13 @@ ABSABaseAndEval ()
 ########################
 ### Stage 1 Training ###
 ########################
-echo -e "***** Create train vector for stage1 and train the model (using SVM) *****" >&2
+#echo -e "***** Create train vector for stage1 and train the model (using SVM) *****" >&2
 
 #produce tr.asp.dat tr.asp.label
-scripts/preprocess/preprocess_asp.py $dom train $pIdxArg
+#scripts/preprocess/preprocess_asp.py $dom train $pIdxArg
 
 #produce SVMmodel/lap.model
-#src/libsvm/python/train_asp.py $dom $pIdxArg
+#src/libsvm/python/train_asp.py $dom $pIdxArg bow+wv
 
 #deprecated section
 #src/SVM/train_asp.py $dom
@@ -35,16 +33,16 @@ scripts/preprocess/preprocess_asp.py $dom train $pIdxArg
 ##########################
 ### Stage 1 Predicting ###
 ##########################
-echo -e "***** Create test vector for stage1 and predict its category prob. distribution *****" >&2
+#echo -e "***** Create test vector for stage1 and predict its category prob. distribution *****" >&2
 
 #produce te.svm.asp te.svm.pol
-scripts/preprocess/preprocess_asp.py $dom te $pIdxArg
-#src/libsvm/python/predict_asp.py $dom $pIdxArg $thr
+#scripts/preprocess/preprocess_asp.py $dom te $pIdxArg
+#src/libsvm/python/predict_asp.py $dom $pIdxArg $thr bow+wv
 
 #deprecated section
 #src/SVM/predict_asp.py $dom
 
-echo -e "***** Produce result (xml format) in slot1  *****" >&2
+#echo -e "***** Produce result (xml format) in slot1  *****" >&2
 #scripts/submit/submit_asp.py $dom $pIdxArg
 
 
@@ -53,7 +51,7 @@ echo -e "***** Produce result (xml format) in slot1  *****" >&2
 ### Stage 2 Training ###
 ########################
 echo -e "***** Create train vector for stage2 and train the model (using SVM) *****"
-scripts/preprocess/preprocess_pol.py $dom train $pIdxArg
+#scripts/preprocess/preprocess_pol.py $dom train $pIdxArg
 #src/treelstm/embed_pol.py   #need add!!
 #src/libsvm/python/train_pol.py $dom
 
@@ -61,17 +59,19 @@ scripts/preprocess/preprocess_pol.py $dom train $pIdxArg
 ### Stage 2 Predicting ###
 ##########################
 echo -e "***** Creating test vectors for Stage2 and predict its polarity(Using gold aspect) *****"
-scripts/preprocess/preprocess_pol.py $dom te $pIdxArg
+#scripts/preprocess/preprocess_pol.py $dom te $pIdxArg
 #src/treelstm/embed_pol.py   #need add!!
 #src/libsvm/python/predict_pol.py $dom
+scripts/submit/submit_pol.py $dom $pIdxArg
 
-echo -e "\n"
-echo -e "***** Evaluate Stage 1 Output (target and category) *****"
+#echo -e "\n"
+#echo -e "***** Evaluate Stage 1 Output (target and category) *****"
 
 #java -cp ./A.jar absa16.Do Eval -prd "output/${dom}_asp.xml.${pIdxArg}" -gld "tmp_data/teGld.xml.${pIdxArg}" -evs 1 -phs A -sbt SB1
 
 
 #echo -e "***** Evaluate Stage 2 Output (Polarity) *****"
+java -cp ./A.jar absa16.Do Eval -prd "output/${dom}_pol.xml.${pIdxArg}" -gld "tmp_data/teGld.xml.${pIdxArg}" -evs 5 -phs B -sbt SB1
 #java -cp ./A.jar absa16.Do Eval ${pth}"teGldAspTrg.PrdPol.xml"${suff} ${pth}"teGld.xml"${suff} -evs 5 -phs B -sbt SB1
 
 }
