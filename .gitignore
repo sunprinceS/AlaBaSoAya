@@ -6,8 +6,11 @@ tags
 
 # custom #
 data/*
+#!src/libsvm/python/
 src/libsvm/*
-!src/libsvm/python/util/
+!src/libsvm/python/
+src/libsvm/python/SVMmodel/*
+src/libsvm/python/transformModel/*
 tmp_data/*
 glove/*
 output/*
