@@ -51,7 +51,8 @@ elseif args.dataset == 'laptop' then
 end
 
 -- load vocab
-local vocab = treelstm.Vocab(data_dir .. 'vocab-cased.txt')
+local vocab = treelstm.Vocab(data_dir .. 'vocab-cased-all.txt')
+--local vocab = treelstm.Vocab(data_dir .. 'vocab-cased.txt')
 --local vocab = treelstm.Vocab(data_dir .. 'vocab_test.txt')
 --vocab:add_unk_token()
 

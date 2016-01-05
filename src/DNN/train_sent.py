@@ -13,42 +13,58 @@ from io import StringIO
 from settings_sent import *
 import sys
 import lasagne
+import argparse
 
 
-def load_dataset():
+def load_dataset(train_dat_path, train_lab_path, test_dat_path):
+    with open(train_dat_path, 'r') as train_data, \
+         open(train_lab_path, 'r') as train_lab, \
+         open(test_dat_path, 'r') as test_data:
+        X_train = []
+        y_train = []
+        X_test = []
+        for x,y in zip(train_data.read().splitlines(),train_lab.read().splitlines()):
+            X_train.append(np.loadtxt(StringIO(x),dtype=np.float32))
+            y = y.split(',')[1]
+            if y == 'positive':
+                lab = '2'
+            elif y == 'neutral':
+                lab = '1'
+            elif y == 'negative':
+                lab = '0'
+            y_train.append(np.loadtxt(StringIO(lab),dtype=np.int32))
+        for line in test_data.read().splitlines():
+            X_test.append(np.loadtxt(StringIO(line), dtype=np.float32))
 
-    train_data = open("DATA/{}.in".format(sys.argv[1]))
-    train_lab = open("DATA/{}.lab_sent".format(sys.argv[1]))
-    X_train=[]
-    y_train=[]
-    for x,y in zip(train_data.read().splitlines(),train_lab.read().splitlines()):
-        X_train.append(np.loadtxt(StringIO(x),dtype=np.float32))
-        y_train.append(np.loadtxt(StringIO(y),dtype=np.int32))
+        X_train = np.asarray(X_train)
+        y_train = np.asarray(y_train)
+        X_test = np.asarray(X_test)
+        assert len(X_train) == len(y_train)
+        X_train, X_val = X_train[:int(len(X_train)*4/5)], X_train[int(-len(X_train)*4/5):]
+        y_train, y_val = y_train[:int(len(y_train)*4/5)], y_train[int(-len(y_train)*4/5):]
 
-    X_train = np.asarray(X_train)
-    y_train = np.array(y_train)
-    assert len(X_train) == len(y_train)
-    X_train, X_val = X_train[:int(len(X_train)*4/5)], X_train[int(-len(X_train)*4/5):]
-    y_train, y_val = y_train[:int(len(y_train)*4/5)], y_train[int(-len(y_train)*4/5):]
-
-    train_data.close()
-    train_lab.close()
-    return X_train, y_train, X_val, y_val
+        return X_train, y_train, X_val, y_val, X_test
 
 
-def iterate_minibatches(inputs, targets, batchsize=BATCH_SIZE, shuffle=False):
-    assert len(inputs) == len(targets)
-    inputs = np.array(inputs)
-    targets = np.array(targets)
-    if shuffle:
-        indices = np.arange(len(inputs))
-        np.random.shuffle(indices)
-    for start_idx in range(0, len(inputs) - batchsize + 1, batchsize):
+def iterate_minibatches(inputs, targets=None, batchsize=BATCH_SIZE, shuffle=False):
+    if targets is None:
+        assert len(inputs) == len(targets)
+        inputs = np.array(inputs)
+        targets = np.array(targets)
         if shuffle:
-            excerpt = indices[start_idx:start_idx + batchsize]
-        else:
+            indices = np.arange(len(inputs))
+            np.random.shuffle(indices)
+        for start_idx in range(0, len(inputs) - batchsize + 1, batchsize):
+            if shuffle:
+                excerpt = indices[start_idx:start_idx + batchsize]
+            else:
+                excerpt = slice(start_idx, start_idx + batchsize)
+            yield (inputs[excerpt], targets[excerpt])
+    else:
+        inputs = np.array(inputs)
+        for start_idx in range(0, len(inputs) - batchsize + 1, batchsize):
             excerpt = slice(start_idx, start_idx + batchsize)
-        yield (inputs[excerpt], targets[excerpt])
+            yield inputs[excerpt]
 
 
 # ############################## Main program ################################
@@ -57,10 +73,16 @@ def iterate_minibatches(inputs, targets, batchsize=BATCH_SIZE, shuffle=False):
 # easier to read.
 
 def main():
+    parser = argparse.ArgumentParser(prog='train_sent.py', description='Train DNN for ABSA sentiment subtask')
+    parser.add_argument('--train-dat-path', type=str, required=True, metavar='<training data path>')
+    parser.add_argument('--train-lab-path', type=str, required=True, metavar='<training label path>')
+    parser.add_argument('--test-dat-path', type=str, required=True, metavar='<testing data path>')
+    parser.add_argument('--pred-path', type=str, required=True, metavar='<predictions path>')
+    args = parser.parse_args()
+
     # Load the dataset
     print("Loading data...")
-    X_train, y_train, X_val, y_val = load_dataset()
-    
+    X_train, y_train, X_val = load_dataset(ars.train_dat_path, args.train_lab_path, args.test_dat_path)
 
     # Prepare Theano variables for inputs and targets
     input_var = T.matrix('inputs')
@@ -68,7 +90,7 @@ def main():
     # Create neural network model (depending on first command line parameter)
     print("Building model and compiling functions...")
     network = build_model(inputVar=input_var)
-    
+
     #load previous model
     if len(sys.argv) == 3:
         print("loading model".format(sys.argv[2]))
@@ -104,6 +126,7 @@ def main():
     train_fn = theano.function([input_var, target_var], loss, updates=updates)
 
     val_fn = theano.function([input_var, target_var], [test_loss, test_acc])
+    test_fn = theano.function([input_var], test_prediction)
 
     # Finally, launch the training loop.
     print("Starting training...")
@@ -137,6 +160,21 @@ def main():
             val_acc / val_batches * 100))
         if(epoch%10==0):
             np.savez('model_sent/{}/tmp/{}x{:.2f}.npz'.format(sys.argv[1],epoch,val_acc / val_batches * 100), *lasagne.layers.get_all_param_values(network))
+
+    # testing data
+    predictions = []
+    for batch in iterate_minibatches(X_test, 200 , shuffle=False):
+        inputs, targets = batch
+        pred = test_fn(inputs, targets)
+        predictions.extend(pred.tolist())
+    with open(args.pred_path, 'w') as pred_file:
+        for pred in predictions:
+            if pred == 0:
+                pred_file.write('negative\n')
+            elif pred == 1:
+                pred_file.write('neutral\n')
+            else:
+                pred_file.write('positive\n')
 
 
 if __name__ == '__main__':

@@ -25,3 +25,8 @@ treelstm/trained_models
 treelstm/data
 treelstm/predictions
 __pycache__/
+*.json
+*.hdf5
+*.pkl
+*.npy
+*pred*
