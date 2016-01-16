@@ -18,8 +18,8 @@ from keras.layers.core import Dense, Activation, Merge, Dropout, Reshape
 from keras.utils import generic_utils
 from keras.optimizers import Adagrad
 
-from utils_new import LoadAspectMap, LoadSentenceFeatures, LoadAspects, LoadLabels, SavePredictions, GetAspectFeatures, GetLabelEncoding, GetLabelEncoder, GetAspectEncoder, MakeBatches, GetAspectFeatures, LoadSentences, LoadGloVe, GetSentenceTensor
-from settings_nolstm import CreateGraph, transpose
+from utils import LoadAspectMap, LoadSentenceFeatures, LoadAspects, LoadLabels, SavePredictions, GetAspectFeatures, GetLabelEncoding, GetLabelEncoder, GetAspectEncoder, MakeBatches, GetAspectFeatures, LoadSentences, LoadGloVe, GetSentenceTensor
+from settings import CreateGraph, transpose
 
 def main():
     start_time = time.time()
