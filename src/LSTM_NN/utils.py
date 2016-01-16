@@ -28,6 +28,22 @@ def LoadAspectMap(domain):
             idx += 1
     return asp_map
 
+def LoadSentences(domain, dataset, cross_val_idx):
+    # output: list with lists as elements
+    # ex. [ ['What','is','the','color','of','the','ball','?'], [], [], ... ]
+    assert (dataset == 'train' or dataset == 'dev' or dataset == 'test')
+    sentences = []
+    with open('misc_data/'+domain+'_'+dataset+'.pol.parsed.'+str(cross_val_idx), 'r') as f:
+        for line in f:
+            toks = line.strip().split()
+            sentences.append(toks)
+    if dataset == 'te' or dataset == 'test':
+        return sentences
+
+    train_sents = sentences[:int((4/5)*len(sentences))]
+    dev_sents = sentences[int((4/5)*len(sentences)):]
+    return train_sents, dev_sents
+
 def LoadSentenceFeatures(domain, dataset, cross_val_idx):
     # Description: Load sentence features (features are from TreeLSTM)
     # Output: numpy ndarray with dimension (nb_sentences, sent_vec_dim)
@@ -81,6 +97,22 @@ def LoadLabels(domain, dataset, cross_val_idx):
     dev_labs = labels[int((4/5)*len(labels)):]
     return train_labs, dev_labs
 
+def LoadGloVe():
+    # output:
+    #     word_embedding: a numpy array of shape (n_words, word_vec_dim), where n_words = 2196017 and word_vec_dim = 300
+    #     word_map: a dictionary that maps words (strings) to their indices in the word embedding matrix (word_embedding)
+    word_embedding = joblib.load('glove/glove.840B.float32.emb')
+    unk = np.mean(word_embedding, axis=0)
+    word_embedding = np.vstack([word_embedding, unk])
+    word_map = {}
+    with open('glove/vocab.txt', 'r', encoding='utf-8') as f:
+        i = 0
+        for line in f:
+            line = line.strip()
+            word_map[line] = i
+            i += 1
+    return word_embedding, word_map
+
 def SavePredictions(filepath, predictions, length):
     # Save predictions to filepath
     with open(filepath, 'w') as f:
@@ -91,6 +123,22 @@ def SavePredictions(filepath, predictions, length):
 ############################
 #       Get Features       #
 ############################
+
+def GetSentenceTensor(sentences, word_embedding, word_map):
+    # description: returns a time series of word vectors for tokens in the sentences
+    # output:
+    #     a numpy ndarray of shape: (batch_size, timesteps, word_vec_dim)
+    batch_size = len(sentences)
+    timesteps = 100
+    word_vec_dim = 300
+    sentences_tensor = np.zeros((batch_size, timesteps, word_vec_dim), float)
+    for i in range(len(sentences)):
+        tokens = sentences[i]
+        for j in range(len(tokens)):
+            feature = GetWordFeature(tokens[j], word_embedding, word_map)
+            if j < timesteps:
+                sentences_tensor[i,j,:] = feature
+    return sentences_tensor
 
 def GetAspectFeatures(aspects, asp_encoder):
     # Description: converts string objects to 1-of-N vectors
@@ -123,6 +171,15 @@ def MakeBatches(iterable, n, fillvalue=None):
     #    ex. [ ('positive','negative'),('neutral','negative'),...) ] for labels with batch_size=2
     args = [iter(iterable)] * n
     return zip_longest(*args, fillvalue=fillvalue)
+
+def GetWordFeature(word, word_embedding, word_map):
+    feature = np.zeros((300), float)
+    if word in word_map:
+        feature = word_embedding[word_map[word]]
+    else:
+        #feature = np.mean(word_embedding, axis=0)
+        feature = word_embedding[word_embedding.shape[0]-1]
+    return feature
 
 def GetLabelEncoder(domain, cross_val_idx):
     # Description: Create a LabelEncoder object for encoding labels to 1-of-N vectors

@@ -72,7 +72,7 @@ def main():
 
     # save model configuration
     json_string = model.to_json()
-    model_filename = 'models/%s_mlp_units_%i_layers_%i_%s_lr%.1e_dropout%.1f.%i' % (args.domain, args.mlp_hidden_units, args.mlp_hidden_layers, args.mlp_activation, args.learning_rate, args.dropout, args.cross_val_index)
+    model_filename = 'models/%s.treelstm_nn_sep.mlp_units_%i_layers_%i_%s.lr%.1e.dropout%.1f.%i' % (args.domain, args.mlp_hidden_units, args.mlp_hidden_layers, args.mlp_activation, args.learning_rate, args.dropout, args.cross_val_index)
     open(model_filename + '.json', 'w').write(json_string)
 
     # loss and optimizer
