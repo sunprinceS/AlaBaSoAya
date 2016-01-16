@@ -1,49 +1,60 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
 from svmutil import *
-from sklearn.feature_extraction.text import CountVectorizer , TfidfTransformer
-from sklearn.decomposition import PCA
-from sklearn.externals import joblib
+from util import *
 import sys
+import numpy as np
 
-lab_map={}
-lab_set=[]
+def main():
 
-with open('misc_data/categoryMap/{}.category'.format(sys.argv[1])) as category_file:
-    categories = category_file.read().splitlines()
-    for idx,category in enumerate(categories):
-        lab_map[idx]=category
+    data_matrix=[]
 
-# build bag of words analyzer
-vectorizer = joblib.load('src/libsvm/python/transformModel/vec.{}.{}'.format(sys.argv[1],sys.argv[2])
-)
-tfidf_transformer = joblib.load('src/libsvm/python/transformModel/tfidf.{}.{}'.format(sys.argv[1],sys.argv[2]))
+    #load category map
+    lab_map=io.loadMap(sys.argv[1],'te')
 
-# pca = joblib.load('src/libsvm/python/transformModel/pca.{}.{}'.format(sys.argv[1],sys.argv[2]))
+    # load testing data
+    test_corpus = io.loadDat(sys.argv[1],sys.argv[2],'te','asp')
+
+    if sys.argv[4] == 'bow':
+
+        data_matrix = transform.BOWtransform(test_corpus,'te',sys.argv[1],sys.argv[4],sys.argv[2])
+
+    elif sys.argv[4] == 'wv':
+
+        data_matrix = transform.gloveTransform(test_corpus)
 
 
-#Predicting stage
-with open('misc_data/{}_te.asp.dat.{}'.format(sys.argv[1],sys.argv[2])) as test_data:
-    test_corpus = test_data.read().splitlines()
-    bow_matrix = vectorizer.transform(test_corpus)
+    elif sys.argv[4] == 'bow+wv':
 
-    bow_matrix = tfidf_transformer.transform(bow_matrix)
-    bow_corpus_numeric = bow_matrix.toarray()
-    # bow_corpus_numeric = pca_transformer.transform(bow_corpus_numeric)
+        data_matrix = transform.BOWtransform(test_corpus,'te',sys.argv[1],sys.argv[4],sys.argv[2])
+        wv_matrix = transform.gloveTransform(test_corpus)
 
+        #concat bow and glove vector
+        for vec,wv_vec in zip(data_matrix,wv_matrix):
+            vec.extend(wv_vec)
+
+    else:
+        print("unexpected type!",file=sys.stderr)
+
+    #use SVM to classify
+    #dummy label
     con_labels=[0]*len(test_corpus)
 
-    bow_corpus_numeric = bow_corpus_numeric.tolist()
-    svm_classify_model= svm_load_model('src/libsvm/python/SVMmodel/{}.model.{}'.format(sys.argv[1],sys.argv[2]))
+    svm_classify_model= svm_load_model('{}/{}.model_{}.{}.{}'.format(marcos.SVM_MODEL_DIR,sys.argv[1],'asp',sys.argv[4],sys.argv[2]))
     lab_set = svm_classify_model.get_labels()
-    p_labels,p_acc,p_val=svm_predict(con_labels,bow_corpus_numeric,svm_classify_model,'-b 1')
+    p_labels,p_acc,p_val=svm_predict(con_labels,data_matrix,svm_classify_model,'-b 1')
 
-with open('output/{}_asp.out.{}'.format(sys.argv[1],sys.argv[2]),'w') as ans:
-    for p_dis in p_val:
-        ans_list=[]
-        for i,p in enumerate(p_dis):
-            if(p >= float(sys.argv[3])): # threshold
-                ans_list.append(lab_map[lab_set[i]])
-        ans.write('{}\n'.format(' '.join(ans_list)))
+
+    #write ans
+    with open('output/{}_asp.out.{}'.format(sys.argv[1],sys.argv[2]),'w') as ans:
+        for p_dis in p_val:
+            ans_list=[]
+            for idx,p in enumerate(p_dis):
+                if(p >= float(sys.argv[3])): # threshold
+                    ans_list.append(lab_map[lab_set[idx]])
+            ans.write('{}\n'.format(' '.join(ans_list)))
+
+
+if __name__ == "__main__":
+    main()
