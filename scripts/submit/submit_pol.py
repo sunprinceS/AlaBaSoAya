@@ -28,13 +28,10 @@ for review in reviews:
    sentences = sentences_root.getElementsByTagName('sentence')
    for sentence in sentences:
        sentence_id = sentence.getAttribute("id")
-       try:
-           opinions_root = sentence.getElementsByTagName("Opinions")[0]
-           opinions = opinions_root.getElementsByTagName("Opinion")
-           for opinion in opinions:
-               opinion.setAttribute("polarity",ans[ans_idx])
-               ans_idx+=1
-       except IndexError:
-           continue
+       opinions_root = sentence.getElementsByTagName("Opinions")[0]
+       opinions = opinions_root.getElementsByTagName("Opinion")
+       for opinion in opinions:
+           opinion.setAttribute("polarity",ans[ans_idx])
+           ans_idx+=1
 with open(submit_data,'w') as final_ans:
     final_ans.write(submit_DOMTree.toxml())

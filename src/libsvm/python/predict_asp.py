@@ -4,6 +4,7 @@
 from svmutil import *
 from util import *
 import sys
+import numpy as np
 
 def main():
 

@@ -13,6 +13,9 @@ svm_dir=src/libsvm/python
 ABSABaseAndEval ()
 {
 
+if [ "$xva" -eq 0 ]; then
+	pIdxArg=0
+fi
 # create feature vector (Tree-LSTM , BOW , autoencoder)
 
 ########################
@@ -24,7 +27,7 @@ echo -e "***** Create train vector for stage1 and train the model (using SVM) **
 scripts/preprocess/preprocess_asp.py $dom train $pIdxArg
 
 #produce SVMmodel/lap.model
-$svm_dir/train_asp.py $dom $pIdxArg bow+wv
+$svm_dir/train_asp.py $dom $pIdxArg bow
 
 ##########################
 ### Stage 1 Predicting ###
@@ -33,7 +36,7 @@ echo -e "***** Create test vector for stage1 and predict its category prob. dist
 
 #produce te.svm.asp te.svm.pol
 scripts/preprocess/preprocess_asp.py $dom te $pIdxArg
-$svm_dir/predict_asp.py $dom $pIdxArg $thr bow+wv
+$svm_dir/predict_asp.py $dom $pIdxArg $thr bow
 
 
 echo -e "***** Produce result (xml format) in slot1  *****" >&2
@@ -47,6 +50,7 @@ scripts/submit/submit_asp.py $dom $pIdxArg
 #echo -e "***** Create train vector for stage2 and train the model (using SVM) *****"
 #scripts/preprocess/preprocess_pol.py $dom train $pIdxArg
 #$svm_dir/train_pol.py $dom $pIdxArg
+#$svm_dir/train_pol_old.py $dom $pIdxArg
 
 ##########################
 ### Stage 2 Predicting ###
@@ -54,7 +58,8 @@ scripts/submit/submit_asp.py $dom $pIdxArg
 
 #echo -e "***** Creating test vectors for Stage2 and predict its polarity(Using gold aspect) *****"
 #scripts/preprocess/preprocess_pol.py $dom te $pIdxArg
-#$svm_dir/predict_pol.py $dom
+#$svm_dir/predict_pol.py $dom $pIdxArg
+#$svm_dir/predict_pol_old.py $dom $pIdxArg
 #scripts/submit/submit_pol.py $dom $pIdxArg
 
 echo -e "\n"

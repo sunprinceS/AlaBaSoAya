@@ -18,7 +18,7 @@ def loadMap(domain,mode):
     with open('{}/{}.category'.format(marcos.CAT_DIR,domain)) as category_file:
         categories = category_file.read().splitlines()
         lab_map={}
-        if mode == 'train':
+        if mode == 'train' or mode == 'test_pol':
             for idx,category in enumerate(categories):
                 lab_map[category]=idx
         elif mode == 'te':
@@ -43,6 +43,11 @@ def loadLabel(domain,cross_val,mode,task,lab_map):
         if task == 'asp':
             for label in labels:
                 golden.append(lab_map[label.split(',')[1]])
+        elif task =='pol':
+            for label in labels:
+                golden.append(lab_map[label.split(',')[1]])
+        else:
+            print('Unexpected task {}!'.format(task),file=sys.stderr)
     return golden
 
 def loadVocabDict():
@@ -61,3 +66,18 @@ def loadGloveVec():
     glove_matrix = np.vstack([glove_matrix,oov_vec])
 
     return glove_matrix
+def loadTreeLSTMVec(domain,mode,idx):
+    treelstm_matrix=[]
+    with open('{}/{}_{}.pol.feat.{}'.format(marcos.MISC_DIR,domain,mode,idx)) as treelstm_dat:
+        treelstm = treelstm_dat.read().splitlines()
+        for vec in treelstm:
+            tmp = np.array(vec.split(' ')).astype(np.float32)
+            treelstm_matrix.append(tmp)
+    return np.array(treelstm_matrix)
+def loadAsp(domain,mode,idx):
+    asp_list = []
+    with open('{}/{}_{}.pol.goldenAsp.{}'.format(marcos.MISC_DIR,domain,mode,idx)) as asp_file:
+        asp_list = asp_file.read().splitlines()
+    return asp_list
+
+def 

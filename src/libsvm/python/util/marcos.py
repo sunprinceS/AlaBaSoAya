@@ -13,6 +13,7 @@ CAT_DIR='misc_data/categoryMap'
 MISC_DIR='misc_data'
 TRANSFORM_MODEL_DIR='src/libsvm/python/transformModel'
 SVM_MODEL_DIR='src/libsvm/python/SVMmodel'
+SVM_SENT_MODEL_DIR='src/libsvm/python/SVMSentModel'
 
 
 PREPROCESS_PIPE = Pipeline([('bow',CountVectorizer()),

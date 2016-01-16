@@ -2,46 +2,26 @@
 # -*- coding: utf-8 -*-
 
 from svmutil import *
-from svm import *
-from sklearn.feature_extraction.text import CountVectorizer
+from util import *
 import sys
+import numpy as np
 
-DATA_PATH = 'Files'
-lab_map={'positive':1,'negative':2,'neutral':3,'conflict':4}
-lab_set=[]
+lab_map={1:'positive',-1:'negative',0:'neutral'}
 
-# build bag of words analyzer
-vectorizer = CountVectorizer(min_df=1)
-with open('{}/tr.pol.dat'.format(DATA_PATH)) as train_data:
-    train_corpus = train_data.read().splitlines()
-    bow_matrix = vectorizer.fit_transform(train_corpus)
-    # print("Total words in {}.dat : {}".format(sys.argv[1],len(vectorizer.get_feature_names())))
-    # print("Total aspect in {}.lab : {}".format(sys.argv[1],len(lab_map)))
-    
-    bow_corpus_numeric = bow_matrix.toarray()
+def main():
+    data_matrix = []
 
-    train_labels=[]
-    with open('{}/tr.pol.label'.format(DATA_PATH)) as label_file:
-        labels = label_file.read().splitlines()
-        for label in labels:
-            train_labels.append(lab_map[label.split(',')[1]])
-
-    bow_corpus_numeric = bow_corpus_numeric.tolist()
-
-    problem = svm_problem(train_labels,bow_corpus_numeric)
-
-    svm_classify_model = svm_train(train_labels,bow_corpus_numeric,'-t 0 -b 1 -q')
-
-    svm_save_model('SVMmodel/{}.model'.format(sys.argv[1]),svm_classify_model)
-
-    p_labels,p_acc,p_val=svm_predict(train_labels,bow_corpus_numeric,svm_classify_model,'-b 1')
-
-with open('{}/Out.pol'.format(DATA_PATH),'w') as ans:
-    for p_label in p_labels:
-        if int(p_label) not in lab_set:
-            lab_set.append(int(p_label))
-    ans.write('labels '+' '.join(str(x) for x in lab_set)+'\n')
-
-    for p_label,p_dis in zip(p_labels,p_val):
-        ans.write('{} {}\n'.format(int(p_label),' '.join(str(p) for p in p_dis)))
-
+    #load category map
+    asp_map = io.loadMap(sys.argv[1],'test_pol')
+    asp_list = io.loadAsp(sys.argv[1],'te',sys.argv[2])
+    data_matrix_tmp = io.loadTreeLSTMVec(sys.argv[1],'te',sys.argv[2])
+    data_matrix = transform.addAspect(data_matrix_tmp,asp_map,asp_list)
+    con_labels = [0]*len(asp_list)
+    svm_classify_model = svm_load_model('{}/{}.model_{}.{}'.format(marcos.SVM_SENT_MODEL_DIR,sys.argv[1],'pol',sys.argv[2]))
+    lab_set = svm_classify_model.get_labels()
+    p_labels,p_acc,p_val=svm_predict(con_labels,data_matrix,svm_classify_model,'-b 1')
+    with open('{}/{}.pol.pred.{}'.format(marcos.MISC_DIR,sys.argv[1],sys.argv[2]),'w') as ans_file:
+        for label in p_labels:
+            ans_file.write('{}\n'.format(lab_map[label]))
+if __name__ == "__main__":
+    main()

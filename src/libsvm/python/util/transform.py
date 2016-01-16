@@ -34,6 +34,7 @@ def BOWTransformer():
     return preprocess_pipe
 
 def BOWtransform(corpus,mode,domain,trans_type,cross_val):
+    data_matrix=[]
 
     if mode == 'train':
         bow_transformer = BOWTransformer()
@@ -57,6 +58,16 @@ def BOWtransform(corpus,mode,domain,trans_type,cross_val):
         data_matrix = data_matrix.tolist()
 
     return data_matrix
+
+def addAspect(treelstm_vec_array,asp_map,asp_list):
+    # print(treelstm_vec_array.shape)
+    # print(len(asp_list))
+    asp_array = np.zeros((len(asp_list),1), 'float32')
+    for idx,asp in enumerate(asp_list):
+        asp_array[idx] += float(asp_map[asp])
+    ret = np.hstack((treelstm_vec_array,asp_array))
+    return (np.hstack((treelstm_vec_array,asp_array))).tolist()
+
 
 def gloveTransform(corpus):
 
