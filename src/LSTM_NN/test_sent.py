@@ -105,7 +105,7 @@ def main():
         pred = model.predict_classes([X_sent_batch, X_asp_batch], batch_size, verbose=0)
         pol = lab_encoder.inverse_transform(pred).tolist()
         predictions.extend(pol)
-        pbar.add(args.batch_size)
+        pbar.add(batch_size)
     SavePredictions(args.output, predictions, len(te_sents))
 
     print('Testing finished.')
