@@ -31,7 +31,7 @@ def LoadAspectMap(domain):
 def LoadSentences(domain, dataset, cross_val_idx):
     # output: list with lists as elements
     # ex. [ ['What','is','the','color','of','the','ball','?'], [], [], ... ]
-    assert (dataset == 'train' or dataset == 'dev' or dataset == 'test')
+    assert (dataset == 'train' or dataset == 'te' or dataset == 'test')
     sentences = []
     with open('misc_data/'+domain+'_'+dataset+'.pol.parsed.'+str(cross_val_idx), 'r') as f:
         for line in f:

@@ -1,7 +1,7 @@
 ######################################################################################
 #   FileName:       [ train_sent.py ]                                                #
 #   PackageName:    [ AlaBasoAya ]                                                   #
-#   Synopsis:       [ Train MLP for ABSA sentiment classification ]                  #
+#   Synopsis:       [ Train LSTM-NN for ABSA sentiment classification ]              #
 #   Authors:        [ Wei Fang, SunprinceS ]                                         #
 ######################################################################################
 
@@ -26,7 +26,7 @@ def main():
 
     # argument parser
     parser = argparse.ArgumentParser(prog='train_sent.py',
-            description='Train MLP model for ABSA sentiment classification')
+            description='Train LSTM-NN model for ABSA sentiment classification')
     parser.add_argument('--lstm-hidden-units', type=int, default=512, metavar='<lstm-hidden-units>')
     parser.add_argument('--lstm-hidden-layers', type=int, default=2, metavar='<lstm-hidden-layers>')
     parser.add_argument('--mlp-hidden-units', type=int, default=512, metavar='<mlp-hidden-units>')
@@ -89,7 +89,7 @@ def main():
 
     # save model configuration
     json_string = model.to_json()
-    model_filename = 'models/%s.lstmNN.lstm_units_%i_layers_%i.mlp_units_%i_layers_%i_%s.lr%.1e_dropout%.1f.%i' % (args.domain, args.lstm_hidden_units, args.lstm_hidden_layers, args.mlp_hidden_units, args.mlp_hidden_layers, args.mlp_activation, args.learning_rate, args.dropout, args.cross_val_index)
+    model_filename = 'models/%s.lstmNN.lstm_units_%i_layers_%i.mlp_units_%i_layers_%i_%s.lr%.1e.dropout%.1f.%i' % (args.domain, args.lstm_hidden_units, args.lstm_hidden_layers, args.mlp_hidden_units, args.mlp_hidden_layers, args.mlp_activation, args.learning_rate, args.dropout, args.cross_val_index)
     open(model_filename + '.json', 'w').write(json_string)
 
     # loss and optimizer
@@ -105,7 +105,7 @@ def main():
 
     # aspect mapping
     asp_map = LoadAspectMap(args.domain)
-    # features
+    # sentences
     train_sents, dev_sents = LoadSentences(args.domain, 'train', args.cross_val_index)
     # aspects
     train_asps, dev_asps = LoadAspects(args.domain, 'train', args.cross_val_index, asp_map)

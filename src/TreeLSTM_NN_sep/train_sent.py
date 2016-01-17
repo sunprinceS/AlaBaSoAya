@@ -1,7 +1,7 @@
 ######################################################################################
 #   FileName:       [ train_sent.py ]                                                #
 #   PackageName:    [ AlaBasoAya ]                                                   #
-#   Synopsis:       [ Train MLP for ABSA sentiment classification ]                  #
+#   Synopsis:       [ Train TreeLSTM-NN (sep) for ABSA sentiment classification ]    #
 #   Authors:        [ Wei Fang, SunprinceS ]                                         #
 ######################################################################################
 
@@ -25,7 +25,7 @@ def main():
 
     # argument parser
     parser = argparse.ArgumentParser(prog='train_sent.py',
-            description='Train MLP model for ABSA sentiment classification')
+            description='Train TreeLSTM-NN (separate) model for ABSA sentiment classification')
     parser.add_argument('--mlp-hidden-units', type=int, default=256, metavar='<mlp-hidden-units>')
     parser.add_argument('--mlp-hidden-layers', type=int, default=3, metavar='<mlp-hidden-layers>')
     parser.add_argument('--dropout', type=float, default=0.3, metavar='<dropout-rate>')

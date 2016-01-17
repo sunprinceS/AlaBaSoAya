@@ -1,7 +1,7 @@
 ######################################################################################
 #   FileName:       [ train_sent.py ]                                                #
 #   PackageName:    [ AlaBasoAya ]                                                   #
-#   Synopsis:       [ Train MLP for ABSA sentiment classification ]                  #
+#   Synopsis:       [ Train MemNN-wordvec for ABSA sentiment classification ]        #
 #   Authors:        [ Wei Fang, SunprinceS ]                                         #
 ######################################################################################
 
@@ -26,7 +26,7 @@ def main():
 
     # argument parser
     parser = argparse.ArgumentParser(prog='train_sent.py',
-            description='Train MLP model for ABSA sentiment classification')
+            description='Train MemNN-wordvec model for ABSA sentiment classification')
     parser.add_argument('--mlp-hidden-units', type=int, default=256, metavar='<mlp-hidden-units>')
     parser.add_argument('--mlp-hidden-layers', type=int, default=2, metavar='<mlp-hidden-layers>')
     parser.add_argument('--dropout', type=float, default=0.3, metavar='<dropout-rate>')
@@ -71,7 +71,7 @@ def main():
 
     # aspect mapping
     asp_map = LoadAspectMap(args.domain)
-    # features
+    # sentences
     train_sents, dev_sents = LoadSentences(args.domain, 'train', args.cross_val_index)
     # aspects
     train_asps, dev_asps = LoadAspects(args.domain, 'train', args.cross_val_index, asp_map)

@@ -1,7 +1,7 @@
 ######################################################################################
 #   FileName:       [ train_sent.py ]                                                #
 #   PackageName:    [ AlaBasoAya ]                                                   #
-#   Synopsis:       [ Train MLP for ABSA sentiment classification ]                  #
+#   Synopsis:       [ Train TreeLSTM-NN (sep) for ABSA sentiment classification ]    #
 #   Authors:        [ Wei Fang, SunprinceS ]                                         #
 ######################################################################################
 
@@ -25,7 +25,7 @@ def main():
 
     # argument parser
     parser = argparse.ArgumentParser(prog='test_sent.py',
-            description='Test MLP model for ABSA sentiment classification')
+            description='Test TreeLSTM-NN (separate) model for ABSA sentiment classification')
     parser.add_argument('--aspects', type=int, required=True, metavar='<number of aspects>')
     parser.add_argument('--domain', type=str, required=True, choices=['rest','lapt'], metavar='<domain>')
     parser.add_argument('--cross-val-index', type=int, required=True, choices=range(0,10), metavar='<cross-validation-index>')
@@ -84,22 +84,6 @@ def main():
     ######################
     #      Training      #
     ######################
-    dev_accs = []
-    max_acc = -1
-    max_acc_epoch = -1
-
-    # define interrupt handler
-    def PrintDevAcc():
-        print('Max validation accuracy epoch: %i' % max_acc_epoch)
-        print(dev_accs)
-
-    def InterruptHandler(sig, frame):
-        print(str(sig))
-        PrintDevAcc()
-        sys.exit(-1)
-
-    signal.signal(signal.SIGINT, InterruptHandler)
-    signal.signal(signal.SIGTERM, InterruptHandler)
 
     # start testing
     print('Testing started...')
