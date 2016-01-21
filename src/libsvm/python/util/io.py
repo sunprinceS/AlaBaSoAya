@@ -9,6 +9,7 @@ Description: basic i/o
 import joblib as jl
 import numpy as np
 import scipy as sp
+import sys
 
 from sklearn.feature_extraction.text import CountVectorizer , TfidfTransformer
 
@@ -18,14 +19,14 @@ def loadMap(domain,mode):
     with open('{}/{}.category'.format(marcos.CAT_DIR,domain)) as category_file:
         categories = category_file.read().splitlines()
         lab_map={}
-        if mode == 'train' or mode == 'test_pol':
+        if mode == 'train' or mode == 'test_pol' or mode=='valid':
             for idx,category in enumerate(categories):
                 lab_map[category]=idx
         elif mode == 'te':
             for idx,category in enumerate(categories):
                 lab_map[idx]=category
         else:
-            print('Unexpected mode in loadMap',file=sys.stderr)
+            print('Unexpected mode in loadMap {}'.format(mode),file=sys.stderr)
             sys.exit()
 
         return lab_map
@@ -74,10 +75,9 @@ def loadTreeLSTMVec(domain,mode,idx):
             tmp = np.array(vec.split(' ')).astype(np.float32)
             treelstm_matrix.append(tmp)
     return np.array(treelstm_matrix)
+
 def loadAsp(domain,mode,idx):
     asp_list = []
     with open('{}/{}_{}.pol.goldenAsp.{}'.format(marcos.MISC_DIR,domain,mode,idx)) as asp_file:
         asp_list = asp_file.read().splitlines()
     return asp_list
-
-def 

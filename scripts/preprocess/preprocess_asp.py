@@ -10,6 +10,7 @@ from xml.dom.minidom import parse
 if(sys.argv[2] == 'train'):
 
     ##Info Needed##
+
     data="tmp_data/tr.xml.{}".format(sys.argv[3])
     train_data_name="misc_data/{}_{}.asp.dat.{}".format(sys.argv[1],sys.argv[2],sys.argv[3])
     label_name="misc_data/{}_{}.asp.label.{}".format(sys.argv[1],sys.argv[2],sys.argv[3])
@@ -37,6 +38,39 @@ if(sys.argv[2] == 'train'):
                 label.write('{},{}\n'.format(sentence_id,category))
 
     train_data.close()
+    label.close()
+
+elif(sys.argv[2] == 'valid'):
+
+    ##Info Needed##
+
+    data="tmp_data/teGld.xml.{}".format(sys.argv[3])
+    valid_data_name="misc_data/{}_{}.asp.dat.{}".format(sys.argv[1],sys.argv[2],sys.argv[3])
+    label_name="misc_data/{}_{}.asp.label.{}".format(sys.argv[1],sys.argv[2],sys.argv[3])
+    valid_data = open(valid_data_name,'w')
+    label = open(label_name,'w')
+
+
+    DOMTree = xml.dom.minidom.parse(data)
+    reviews_root = DOMTree.documentElement
+    reviews = reviews_root.getElementsByTagName("Review")
+
+    for review in reviews:
+
+       sentences_root = review.getElementsByTagName('sentences')[0]
+       sentences = sentences_root.getElementsByTagName('sentence')
+
+       for sentence in sentences:
+            sentence_id = sentence.getAttribute("id")
+            text = str(sentence.getElementsByTagName("text")[0].childNodes[0].data)
+            opinions_root = sentence.getElementsByTagName("Opinions")[0]
+            opinions = opinions_root.getElementsByTagName("Opinion")
+            for i,opinion in enumerate(opinions):
+                valid_data.write('{}\n'.format(text))
+                category = opinion.getAttribute("category")
+                label.write('{},{}\n'.format(sentence_id,category))
+
+    valid_data.close()
     label.close()
 
 elif sys.argv[2]=='te':

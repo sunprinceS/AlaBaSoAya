@@ -10,4 +10,4 @@ from sklearn.decomposition import PCA
 from sklearn.decomposition import LatentDirichletAllocation as LDA
 # from sklearn.externals import joblib
 
-__all__ = ['io','transform','marcos']
+__all__ = ['io','transform','marcos','nn']

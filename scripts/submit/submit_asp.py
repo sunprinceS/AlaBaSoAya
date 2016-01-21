@@ -13,11 +13,18 @@ import sys
 
 ##Info Needed##
 ans_dic={}
+cross_val_idx = sys.argv[2]
 idList_file=open('misc_data/{}_te.id.{}'.format(sys.argv[1],sys.argv[2]))
 idList = idList_file.read().splitlines()
 idList_file.close()
 submit_data="output/{}_asp.xml.{}".format(sys.argv[1],sys.argv[2])
-data_skeleton="tmp_data/teCln.xml.{}".format(sys.argv[2])
+data_skeleton=""
+
+if cross_val_idx == '999':
+    data_skeleton="tmp_data/teCln.xml".format(sys.argv[2])
+else:
+    data_skeleton="tmp_data/teCln.xml.{}".format(sys.argv[2])
+
 
 def load_ans():
     with open('output/{}_asp.out.{}'.format(sys.argv[1],sys.argv[2]),'r') as ans_file:

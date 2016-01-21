@@ -14,13 +14,14 @@ import scipy as sp
 from . import io,marcos
 
 
-def BOWTransformer():
+def BOWTransformer(ngram):
 
     preprocess_pipe = marcos.PREPROCESS_PIPE
 
     #set bag of word's param
     preprocess_pipe.set_params(bow__min_df=1)
     preprocess_pipe.set_params(bow__stop_words='english')
+    preprocess_pipe.set_params(bow__ngram_range=(1,ngram))
 
     #set tf-idf param
     # feat_pipe.set_params(tfidf__?=)
@@ -33,17 +34,17 @@ def BOWTransformer():
 
     return preprocess_pipe
 
-def BOWtransform(corpus,mode,domain,trans_type,cross_val):
+def BOWtransform(corpus,mode,domain,trans_type,cross_val,ngram=1):
     data_matrix=[]
 
     if mode == 'train':
-        bow_transformer = BOWTransformer()
+        bow_transformer = BOWTransformer(ngram)
         data_matrix = bow_transformer.fit_transform(corpus)
 
         #save transform model
         jl.dump(bow_transformer,'{}/{}.{}_model.{}'.format(marcos.TRANSFORM_MODEL_DIR,domain,trans_type,cross_val))
 
-    elif mode == 'te':
+    elif mode == 'te' or 'valid':
         bow_transformer = jl.load('{}/{}.{}_model.{}'.format(marcos.TRANSFORM_MODEL_DIR,domain,trans_type,cross_val))
         data_matrix = bow_transformer.transform(corpus)
 
