@@ -160,7 +160,7 @@ function treelstm.read_sentiment_dataset(dir, vocab, fine_grained, dependency)
   if dependency then
     trees = treelstm.read_trees(dir .. 'dparents.txt', dir .. 'dlabels.txt')
   else
-    trees = treelstm.read_trees(dir .. 'parents.txt', dir .. 'labels.txt')
+    trees = treelstm.read_trees(dir .. 'parents.txt', dir .. 'clabels.txt')
     for _, tree in ipairs(trees) do
       set_spans(tree)
     end
@@ -240,7 +240,7 @@ function treelstm.read_absa_dataset(dir, vocab, fine_grained, dependency)
   if dependency then
     trees = treelstm.read_trees(dir .. 'dparents.txt')
   else
-    trees = treelstm.read_trees(dir .. 'parents.txt')
+    trees = treelstm.read_trees(dir .. 'cparents.txt')
     for _, tree in ipairs(trees) do
       set_spans(tree)
     end

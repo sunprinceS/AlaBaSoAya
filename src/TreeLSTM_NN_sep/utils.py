@@ -37,12 +37,7 @@ def LoadSentences(domain, dataset, cross_val_idx):
         for line in f:
             toks = line.strip().split()
             sentences.append(toks)
-    if dataset == 'te' or dataset == 'test':
-        return sentences
-
-    train_sents = sentences[:int((4/5)*len(sentences))]
-    dev_sents = sentences[int((4/5)*len(sentences)):]
-    return train_sents, dev_sents
+    return sentences
 
 def LoadSentenceFeatures(domain, dataset, cross_val_idx):
     # Description: Load sentence features (features are from TreeLSTM)
@@ -55,12 +50,7 @@ def LoadSentenceFeatures(domain, dataset, cross_val_idx):
             feat = feat.strip().split()
             feat = [ float(x) for x in feat ]
             feats.append(feat)
-    if dataset == 'te' or dataset == 'test':
-        return np.asarray(feats, 'float32')
-
-    train_feats = np.asarray(feats[:int((4/5)*len(feats))], 'float32')
-    dev_feats = np.asarray(feats[int((4/5)*len(feats)):], 'float32')
-    return train_feats, dev_feats
+    return np.asarray(feats, 'float32')
 
 def LoadAspects(domain, dataset, cross_val_idx, asp_map):
     # Description: Load golden aspects
@@ -72,14 +62,12 @@ def LoadAspects(domain, dataset, cross_val_idx, asp_map):
     with open('misc_data/'+domain+'_'+dataset+'.pol.goldenAsp.'+str(cross_val_idx), 'r') as asp_file:
         for asp in asp_file:
             asp = asp.strip()
-            asp_idx = asp_map[asp]
+            if asp in asp_map:
+                asp_idx = asp_map[asp]
+            else:
+                asp_idx = asp_map['LAPTOP#GENERAL']
             aspects.append(asp_idx)
-    if dataset == 'te' or dataset == 'test':
-        return aspects
-
-    train_asp = aspects[:int((4/5)*len(aspects))]
-    dev_asp = aspects[int((4/5)*len(aspects)):]
-    return train_asp, dev_asp
+    return aspects
 
 def LoadLabels(domain, dataset, cross_val_idx):
     # Description: loads sentiment labels
@@ -90,12 +78,7 @@ def LoadLabels(domain, dataset, cross_val_idx):
         for lab in lab_file:
             lab = lab.strip().split(',')[1]
             labels.append(lab)
-    if dataset == 'te' or dataset == 'test':
-        return labels
-
-    train_labs = labels[:int((4/5)*len(labels))]
-    dev_labs = labels[int((4/5)*len(labels)):]
-    return train_labs, dev_labs
+    return labels
 
 def LoadGloVe():
     # output:

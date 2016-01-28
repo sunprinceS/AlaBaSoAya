@@ -28,7 +28,7 @@ def main():
             description='Test TreeLSTM-NN (separate) model for ABSA sentiment classification')
     parser.add_argument('--aspects', type=int, required=True, metavar='<number of aspects>')
     parser.add_argument('--domain', type=str, required=True, choices=['rest','lapt'], metavar='<domain>')
-    parser.add_argument('--cross-val-index', type=int, required=True, choices=range(0,10), metavar='<cross-validation-index>')
+    parser.add_argument('--cross-val-index', type=int, required=True, choices=range(0,11), metavar='<cross-validation-index>')
     parser.add_argument('--model', type=str, required=True, metavar='<model-path>')
     parser.add_argument('--weights', type=str, required=True, metavar='<weights-path>')
     parser.add_argument('--output', type=str, required=True, metavar='<prediction-path>')
@@ -38,6 +38,7 @@ def main():
     batch_size = 128
     aspect_dim = args.aspects
     polarity_num = 3
+    print(args.weights)
 
     #######################
     #      Load Model     #
@@ -57,9 +58,9 @@ def main():
     # aspect mapping
     asp_map = LoadAspectMap(args.domain)
     # features
-    te_feats = LoadSentenceFeatures(args.domain, 'te', args.cross_val_index)
+    te_feats = LoadSentenceFeatures(args.domain, 'test', args.cross_val_index)
     # aspects
-    te_asps = LoadAspects(args.domain, 'te', args.cross_val_index, asp_map)
+    te_asps = LoadAspects(args.domain, 'test', args.cross_val_index, asp_map)
     print('Finished loading data.')
     print('Time: %f s' % (time.time()-start_time))
 

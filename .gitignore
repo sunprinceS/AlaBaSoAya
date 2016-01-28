@@ -18,6 +18,7 @@ misc_data/*
 auto_encoder/*
 temp/*
 treelstm/{lib,trained_models,data,predictions}
+treelstm_new/{lib,trained_models,data,all_data,predictions}
 
 *.npz
 *.in

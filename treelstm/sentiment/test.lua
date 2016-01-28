@@ -69,16 +69,16 @@ collectgarbage()
 
 -- load datasets
 print('loading datasets')
---local train_dir = data_dir .. 'train/'
+local train_dir = data_dir .. 'train/'
 --local dev_dir = data_dir .. 'dev/'
-local test_dir = data_dir-- .. 'test/'
+local test_dir = data_dir .. 'test/'
 local dependency = true
 local fine_grained = false
---local train_dataset = treelstm.read_sentiment_dataset(train_dir, vocab, fine_grained, dependency)
+local train_dataset = treelstm.read_sentiment_dataset(train_dir, vocab, fine_grained, dependency)
 --local dev_dataset = treelstm.read_sentiment_dataset(dev_dir, vocab, fine_grained, dependency)
 local test_dataset = treelstm.read_sentiment_dataset(test_dir, vocab, fine_grained, dependency)
 
---printf('num train   = %d\n', train_dataset.size)
+printf('num train   = %d\n', train_dataset.size)
 --printf('num dev   = %d\n', dev_dataset.size)
 printf('num test  = %d\n', test_dataset.size)
 
@@ -92,7 +92,7 @@ model:print_config()
 --local dev_predictions = model:predict_dataset(dev_dataset)
 --local dev_score = accuracy(dev_predictions, dev_dataset.labels)
 --printf('-- dev score: %.4f\n', dev_score)
---local train_features = model:get_features(train_dataset)
+local train_features = model:get_features(train_dataset)
 --local dev_features = model:get_features(dev_dataset)
 local test_features = model:get_features(test_dataset)
 
@@ -103,14 +103,14 @@ if lfs.attributes(treelstm.predictions_dir) == nil then
 end
 --]
 
---local train_features_save_path = string.format(treelstm.predictions_dir .. '/%s_train.feat', args.dataset)
+local train_features_save_path = string.format(treelstm.predictions_dir .. '/%s_train.feat', args.dataset)
 --local dev_features_save_path = string.format(treelstm.predictions_dir .. '/%s_dev.feat', args.dataset)
-local test_features_save_path = string.format(treelstm.predictions_dir .. '/%s.feat', args.dataset)
+local test_features_save_path = string.format(treelstm.predictions_dir .. '/%s_test.feat', args.dataset)
 
 --[
 -- save features to disk
 print('writing features...')
---[[
+--[
 local train_features_file = torch.DiskFile(train_features_save_path, 'w')
 train_features_file:noAutoSpacing()
 for i = 1, train_features:size(1) do

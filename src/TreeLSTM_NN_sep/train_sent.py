@@ -35,7 +35,7 @@ def main():
     parser.add_argument('--learning-rate', type=float, default=0.0001, metavar='<learning-rate>')
     parser.add_argument('--aspects', type=int, required=True, metavar='<number of aspects>')
     parser.add_argument('--domain', type=str, required=True, choices=['rest','lapt'], metavar='<domain>')
-    parser.add_argument('--cross-val-index', type=int, required=True, choices=range(0,10), metavar='<cross-validation-index>')
+    parser.add_argument('--cross-val-index', type=int, required=True, choices=range(0,11), metavar='<cross-validation-index>')
     args = parser.parse_args()
 
     sent_vec_dim = 300
@@ -89,11 +89,14 @@ def main():
     # aspect mapping
     asp_map = LoadAspectMap(args.domain)
     # features
-    train_feats, dev_feats = LoadSentenceFeatures(args.domain, 'train', args.cross_val_index)
+    train_feats = LoadSentenceFeatures(args.domain, 'train', args.cross_val_index)
+    #dev_feats = LoadSentenceFeatures(args.domain, 'te', args.cross_val_index)
     # aspects
-    train_asps, dev_asps = LoadAspects(args.domain, 'train', args.cross_val_index, asp_map)
+    train_asps = LoadAspects(args.domain, 'train', args.cross_val_index, asp_map)
+    #dev_asps = LoadAspects(args.domain, 'te', args.cross_val_index, asp_map)
     # labels
-    train_labs, dev_labs = LoadLabels(args.domain, 'train', args.cross_val_index)
+    train_labs = LoadLabels(args.domain, 'train', args.cross_val_index)
+    #dev_labs = LoadLabels(args.domain, 'te', args.cross_val_index)
     print('Finished loading data.')
     print('Time: %f s' % (time.time()-start_time))
 
@@ -116,9 +119,9 @@ def main():
     train_indices = list(range(len(train_feat_batches)))
 
     # validation batches
-    dev_feat_batches = [ b for b in MakeBatches(dev_feats, args.batch_size, fillvalue=dev_feats[-1]) ]
-    dev_asp_batches = [ b for b in MakeBatches(dev_asps, args.batch_size, fillvalue=dev_asps[-1]) ]
-    dev_lab_batches = [ b for b in MakeBatches(dev_labs, args.batch_size, fillvalue=dev_labs[-1]) ]
+    #dev_feat_batches = [ b for b in MakeBatches(dev_feats, args.batch_size, fillvalue=dev_feats[-1]) ]
+    #dev_asp_batches = [ b for b in MakeBatches(dev_asps, args.batch_size, fillvalue=dev_asps[-1]) ]
+    #dev_lab_batches = [ b for b in MakeBatches(dev_labs, args.batch_size, fillvalue=dev_labs[-1]) ]
 
     print('Finished making batches.')
     print('Time: %f s' % (time.time()-start_time))
@@ -126,7 +129,7 @@ def main():
     ######################
     #      Training      #
     ######################
-    dev_accs = []
+    #dev_accs = []
     max_acc = -1
     max_acc_epoch = -1
 
@@ -173,9 +176,10 @@ def main():
         print('Time: %f s' % (time.time()-start_time))
 
         # evaluate on dev set
-        pbar = generic_utils.Progbar(len(dev_feat_batches)*args.batch_size)
+        #pbar = generic_utils.Progbar(len(dev_feat_batches)*args.batch_size)
 
         # validation feedforward
+        '''
         dev_correct = 0
         for i in range(len(dev_feat_batches)):
             X_feature_batch = np.asarray(dev_feat_batches[i], 'float32')
@@ -202,9 +206,12 @@ def main():
             max_acc = dev_acc
             max_acc_epoch = k
             model.save_weights(model_filename + '_best.hdf5', overwrite=True)
+        '''
 
-    print(dev_accs)
-    print('Best validation accuracy: %f; epoch#%i' % (max_acc, (max_acc_epoch+1)))
+    #print(dev_accs)
+    #print('Best validation accuracy: %f; epoch#%i' % (max_acc, (max_acc_epoch+1)))
+    #print('Best validation accuracy: %f; epoch#%i' % (max_acc, (max_acc_epoch+1)), file=sys.stderr)
+    model.save_weights(model_filename + '_final.hdf5', overwrite=True)
     print('Training finished.')
     print('Time: %f s' % (time.time()-start_time))
 
