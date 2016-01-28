@@ -9,12 +9,18 @@ echo "Reading config..." >&2
 
 # Marcos
 svm_dir=src/libsvm/python
-
+nn_dir=src/DNN
 ABSABaseAndEval ()
 {
 
 if [ "$xva" -eq 0 ]; then
-	pIdxArg=0
+	pIdxArg=all
+	cd tmp_data
+	mv teCln.xml teCln.xml.all
+	mv teGldAspTrg.xml teGldAspTrg.xml.all
+	mv teGld.xml teGld.xml.all
+	mv tr.xml tr.xml.all
+	cd ..
 fi
 # create feature vector (Tree-LSTM , BOW , autoencoder)
 
@@ -25,18 +31,25 @@ echo -e "***** Create train vector for stage1 and train the model (using SVM) **
 
 #produce tr.asp.dat tr.asp.label
 scripts/preprocess/preprocess_asp.py $dom train $pIdxArg
+$nn_dir/collect_asp.py $dom $pIdxArg train
+
+scripts/preprocess/preprocess_asp.py $dom valid $pIdxArg
+$nn_dir/collect_asp.py $dom $pIdxArg valid
+
 
 #produce SVMmodel/lap.model
-$svm_dir/train_asp.py $dom $pIdxArg bow
+#$svm_dir/train_asp.py $dom $pIdxArg bow+wv
+$nn_dir/train_asp.py --domain $dom --cross_val $pIdxArg --transform wv
 
 ##########################
 ### Stage 1 Predicting ###
 ##########################
 echo -e "***** Create test vector for stage1 and predict its category prob. distribution *****" >&2
 
-#produce te.svm.asp te.svm.pol
+##produce te.svm.asp te.svm.pol
 scripts/preprocess/preprocess_asp.py $dom te $pIdxArg
-$svm_dir/predict_asp.py $dom $pIdxArg $thr bow
+
+$nn_dir/predict_asp.py --domain $dom --cross_val $pIdxArg --threshold $thr --transform wv
 
 
 echo -e "***** Produce result (xml format) in slot1  *****" >&2

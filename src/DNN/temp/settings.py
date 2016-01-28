@@ -53,5 +53,3 @@ def build_model(inputVar,input_dim=INPUT_DIM, output_dim=OUTPUT_DIM,
             nonlinearity=lasagne.nonlinearities.softmax
             )
     return l_out
-
-

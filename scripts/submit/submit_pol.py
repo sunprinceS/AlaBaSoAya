@@ -8,7 +8,7 @@ import sys
 # Open XML document using minidom parser
 
 def load_ans():
-    with open('misc_data/{}.pol.pred.{}'.format(sys.argv[1],sys.argv[2])) as ans_file:
+    with open('sent_predictions_treelstm_nn_sep/{}.pol.pred.{}'.format(sys.argv[1],sys.argv[2])) as ans_file:
         return ans_file.read().splitlines()
 
 ans = load_ans()
