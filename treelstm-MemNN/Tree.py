@@ -20,6 +20,9 @@ class Tree(object):
         self.n_children = 0
         self.size = None
         self.children_list = []
+        self.output_module = None
+        self.composer = None
+        self.leaf_module = None
 
     def add_child(child):
         #chlid must be a tree
